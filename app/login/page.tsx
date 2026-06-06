@@ -76,19 +76,17 @@ export default function LoginPage() {
     let supabase
     try {
       supabase = createClient()
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Supabase not configured'
+    } catch {
+      const msg = 'Supabase not configured'
       setError(msg)
       setLoading(false)
       return
     }
-    const { error: forgotError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
-    })
+    const { error: forgotError } = await supabase.auth.resetPasswordForEmail(email)
     if (forgotError) {
       setError(forgotError.message)
     } else {
-      setSuccess('Password reset link sent!')
+      setSuccess('Check your email for the reset link')
     }
     setLoading(false)
   }
