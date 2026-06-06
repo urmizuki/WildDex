@@ -95,7 +95,7 @@ export default function LoginPage() {
     const { error: otpError } = await supabase.auth.signInWithOtp({ email })
     if (otpError) { setError(otpError.message); setLoading(false); return }
     setResetStep(1)
-    setSuccess('Code sent! Check your email.')
+    setSuccess('6-digit code sent! Check your email.')
     startTimer()
     setLoading(false)
   }
@@ -203,8 +203,9 @@ export default function LoginPage() {
           </div>
         ) : resetStep === 1 ? (
           <>
-          <p style={{ color: '#86EFAC', fontSize: '18px', textAlign: 'center', marginBottom: '16px' }}>
-            Code sent to <strong>{email}</strong>
+          <p style={{ color: '#94A3B8', fontSize: '16px', textAlign: 'center', marginBottom: '16px' }}>
+            Enter the code sent to<br/>
+            <strong style={{ color: '#86EFAC', fontSize: '18px' }}>{email}</strong>
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <input
