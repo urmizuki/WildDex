@@ -28,7 +28,7 @@ const SPECIES = [
 ];
 
 let state = {
-  scansUsed: 0,
+  scansUsed: 3,
   scansMax: 5,
   collection: ['meranti', 'keruing', 'rubber'],
   currentFilter: 'all',
@@ -42,10 +42,10 @@ const savedState = localStorage.getItem('wilddex-state');
 if (savedState) {
   try {
     const parsed = JSON.parse(savedState);
-    state.isPro = parsed.isPro || false;
-    state.scansUsed = parsed.scansUsed || 0;
-    state.collection = parsed.collection || state.collection;
-    state.isDark = parsed.isDark || false;
+    state.isPro = parsed.isPro === true;
+    if (typeof parsed.scansUsed === 'number') state.scansUsed = parsed.scansUsed;
+    state.collection = Array.isArray(parsed.collection) && parsed.collection.length > 0 ? parsed.collection : state.collection;
+    state.isDark = parsed.isDark === true;
   } catch (e) {
     console.error('Failed to load saved state', e);
   }

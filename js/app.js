@@ -82,6 +82,7 @@ function goScan() {
     return;
   }
   document.getElementById('page-reveal').classList.add('hidden');
+  document.getElementById('model-loading').style.display = 'none';
   showPage('scan');
   initCamera();
   loadTMModel();

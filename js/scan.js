@@ -64,13 +64,18 @@ async function performScan() {
   }
 
   const btn = document.getElementById('scan-btn');
+  const loading = document.getElementById('model-loading');
   btn.disabled = true;
-  document.getElementById('model-loading').style.display = 'block';
+  loading.style.display = 'block';
 
-  await loadTMModel();
-  if (!cameraStream) await initCamera();
+  try {
+    await loadTMModel();
+    if (!cameraStream) await initCamera();
+  } catch (e) {
+    console.log('Camera/Model init failed', e);
+  }
 
-  document.getElementById('model-loading').style.display = 'none';
+  loading.style.display = 'none';
 
   let predictedId = null;
   let confidence = 0;
@@ -110,10 +115,15 @@ async function handleFileUpload(event) {
   }
 
   const btn = document.getElementById('scan-btn');
+  const loading = document.getElementById('model-loading');
   btn.disabled = true;
-  document.getElementById('model-loading').style.display = 'block';
+  loading.style.display = 'block';
 
-  await loadTMModel();
+  try {
+    await loadTMModel();
+  } catch (e) {
+    console.log('TM model failed to load', e);
+  }
 
   const img = new Image();
   img.onload = async function() {
@@ -137,10 +147,15 @@ async function handleFileUpload(event) {
     saveState();
     updateProUI();
     btn.disabled = false;
-    document.getElementById('model-loading').style.display = 'none';
+    loading.style.display = 'none';
 
     setupReveal(species, confidence);
     goReveal();
+  };
+  img.onerror = function() {
+    loading.style.display = 'none';
+    btn.disabled = false;
+    console.log('Image failed to load');
   };
   img.src = URL.createObjectURL(file);
 }
