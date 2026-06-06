@@ -9,10 +9,20 @@ import type { User } from '@supabase/supabase-js'
 export default function HomePage() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   useEffect(() => {
-    const supabase = createClient()
+    let supabase
+    try {
+      supabase = createClient()
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Supabase not configured'
+      setError(msg)
+      setLoading(false)
+      return
+    }
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         router.push('/login')
@@ -46,11 +56,35 @@ export default function HomePage() {
     )
   }
 
-  // Embed the SPA in an iframe, passing the user email as a hash param
-  // so the SPA can read it and gate features
+  if (error) {
+    return (
+      <div style={{
+        minHeight: '100dvh',
+        background: '#0a0f0a',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#FBBF24',
+        fontFamily: "'Press Start 2P', cursive",
+        fontSize: '10px',
+        textAlign: 'center',
+        lineHeight: 2,
+        padding: '32px',
+      }}>
+        {error}
+      </div>
+    )
+  }
+
+  return <SPAWrapper userEmail={user?.email || ''} onSignOut={handleSignOut} />
+}
+
+function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: () => void }) {
+  const [iframeLoaded, setIframeLoaded] = useState(false)
+
   return (
-    <div style={{ width: '100%', height: '100dvh', position: 'relative', background: '#0a0f0a' }}>
-      {/* Logged-in indicator bar */}
+    <div style={{ width: '100%', height: '100dvh', position: 'relative', background: '#0a0f0a', overflow: 'hidden' }}>
+      {/* Auth bar */}
       <div style={{
         position: 'fixed',
         top: 0,
@@ -69,22 +103,29 @@ export default function HomePage() {
         color: '#86EFAC',
         borderBottom: '1px solid rgba(74, 222, 128, 0.15)',
       }}>
-        <span>{user?.email}</span>
-        <button onClick={handleSignOut} style={{
-          background: 'none',
-          border: '1px solid #4ADE80',
-          color: '#4ADE80',
-          borderRadius: '4px',
-          padding: '2px 10px',
-          cursor: 'pointer',
-          fontFamily: 'VT323, monospace',
-          fontSize: '16px',
+        <span>{userEmail}</span>
+        <button onClick={onSignOut} style={{
+          background: 'none', border: '1px solid #4ADE80', color: '#4ADE80',
+          borderRadius: '4px', padding: '2px 10px', cursor: 'pointer',
+          fontFamily: 'VT323, monospace', fontSize: '16px',
         }}>
           Sign Out
         </button>
       </div>
+      {/* Iframe with user email injected after load */}
       <iframe
-        src={`/index.html#user=${encodeURIComponent(user?.email || '')}`}
+        src={`/index.html`}
+        onLoad={(e) => {
+          // Inject user email into iframe's URL hash after load
+          try {
+            const iframe = e.target as HTMLIFrameElement
+            const src = iframe.src
+            if (!src.includes('#user=')) {
+              iframe.src = `/index.html#user=${encodeURIComponent(userEmail)}`
+            }
+          } catch {}
+          setIframeLoaded(true)
+        }}
         style={{
           width: '100%',
           height: '100%',
