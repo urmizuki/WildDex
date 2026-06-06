@@ -43,7 +43,7 @@ if (WILDEX_USER) {
     try {
       const parsed = JSON.parse(saved);
       // If no user prev stored or mismatch, reset for auth session
-      if (!parsed._user || parsed._user !== WILDEX_USER) {
+      if (parsed._user && parsed._user !== WILDEX_USER) {
         localStorage.removeItem('wilddex-state');
       }
     } catch {

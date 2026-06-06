@@ -140,20 +140,10 @@ function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: ()
           </button>
         </div>
       </div>
-      {/* Iframe with user email injected after load */}
+      {/* Iframe with user email in hash */}
       <iframe
-        src={`/index.html`}
-        onLoad={(e) => {
-          // Inject user email into iframe's URL hash after load
-          try {
-            const iframe = e.target as HTMLIFrameElement
-            const src = iframe.src
-            if (!src.includes('#user=')) {
-              iframe.src = `/index.html#user=${encodeURIComponent(userEmail)}`
-            }
-          } catch {}
-          setIframeLoaded(true)
-        }}
+        src={`/index.html#user=${encodeURIComponent(userEmail)}`}
+        onLoad={() => setIframeLoaded(true)}
         style={{
           position: 'absolute',
           top: '36px',
