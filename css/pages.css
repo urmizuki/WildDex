@@ -1,0 +1,349 @@
+/* ============================================
+   HOME PAGE
+   ============================================ */
+.home-hero {
+  text-align: center;
+  padding: 48px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  color: var(--day-primary);
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+}
+
+.logo-sub {
+  font-family: var(--font-body);
+  font-size: 24px;
+  color: var(--day-muted);
+}
+
+.scan-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--day-card);
+  border: 2px solid var(--day-border);
+  font-family: var(--font-heading);
+  font-size: 10px;
+  color: var(--day-muted);
+}
+
+.scan-counter-value {
+  color: var(--day-accent);
+  font-size: 12px;
+}
+
+.recent-collection {
+  margin-top: 32px;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 10px;
+  color: var(--day-muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: var(--day-border);
+  border-top: 1px dashed var(--day-border);
+}
+
+.mini-collection {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.mini-collection::-webkit-scrollbar { display: none; }
+
+.mini-card {
+  flex-shrink: 0;
+  width: 80px;
+  height: 104px;
+  background: var(--day-card);
+  border: 2px solid var(--day-border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.mini-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border-color: var(--day-primary);
+}
+
+.mini-card:active { transform: translateY(0) scale(0.95); }
+.mini-card svg { width: 48px; height: 48px; }
+
+.mini-card-name {
+  font-family: var(--font-heading);
+  font-size: 8px;
+  color: var(--day-muted);
+  text-align: center;
+  padding: 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* ============================================
+   SCAN PAGE
+   ============================================ */
+.scan-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 16px;
+}
+
+.viewfinder {
+  width: 280px;
+  height: 280px;
+  border: 4px solid var(--day-primary);
+  position: relative;
+  background: var(--day-card);
+  overflow: hidden;
+}
+
+.scan-instructions {
+  text-align: center;
+  font-size: 24px;
+  color: var(--day-muted);
+  max-width: 260px;
+}
+
+/* ============================================
+   COLLECTION
+   ============================================ */
+.collection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--day-border);
+}
+
+.collection-count {
+  font-family: var(--font-heading);
+  font-size: 10px;
+  color: var(--day-muted);
+}
+
+.collection-count span {
+  color: var(--day-accent);
+}
+
+.collection-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 8px;
+}
+
+.collection-filters::-webkit-scrollbar { display: none; }
+
+.filter-btn {
+  padding: 8px 12px;
+  font-family: var(--font-heading);
+  font-size: 8px;
+  text-transform: uppercase;
+  background: var(--day-card);
+  border: 2px solid var(--day-border);
+  color: var(--day-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  min-height: 36px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.filter-btn:hover {
+  border-color: var(--day-primary);
+  transform: translateY(-2px);
+}
+
+.filter-btn:active { transform: translateY(0); }
+
+.filter-btn.active {
+  background: var(--day-primary);
+  border-color: var(--day-primary);
+  color: white;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.collection-card {
+  background: var(--day-card);
+  border: 2px solid var(--day-border);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.collection-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  border-color: var(--day-primary);
+}
+
+.collection-card:active { transform: translateY(0) scale(0.97); }
+
+.collection-card.owned {
+  border-color: var(--day-border);
+}
+
+.collection-card.missing {
+  opacity: 0.55;
+}
+
+.collection-card.missing:hover {
+  opacity: 0.75;
+}
+
+.collection-card-image {
+  height: 120px;
+  background: var(--day-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 2px solid var(--day-border);
+  overflow: hidden;
+}
+
+.collection-card-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to top, var(--day-card), transparent);
+  z-index: 1;
+}
+
+.collection-card-image svg {
+  width: 80px;
+  height: 80px;
+  z-index: 2;
+}
+
+.collection-card-info {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.collection-card-name {
+  font-family: var(--font-heading);
+  font-size: 8px;
+  color: var(--day-text);
+  line-height: 1.4;
+}
+
+.collection-card-rarity {
+  font-family: var(--font-body);
+  font-size: 14px;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+}
+
+.collection-card-rarity.common { color: var(--rarity-common); }
+.collection-card-rarity.uncommon { color: var(--rarity-uncommon); }
+.collection-card-rarity.rare { color: var(--rarity-rare); }
+.collection-card-rarity.legendary { color: var(--rarity-legendary); }
+
+.collection-card-stat {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--day-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--day-muted);
+  font-size: 24px;
+}
+
+/* ============================================
+   CARD REVEAL
+   ============================================ */
+.reveal-page {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  background: rgba(245, 240, 230, 0.95);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* Image upload fallback */
+.image-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-heading);
+  font-size: 8px;
+  text-transform: uppercase;
+  color: var(--day-primary);
+  background: var(--day-bg);
+  border: 2px solid var(--day-border);
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+#file-upload {
+  display: none;
+}

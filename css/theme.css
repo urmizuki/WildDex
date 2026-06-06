@@ -1,0 +1,246 @@
+/* ============================================
+   DAY/NIGHT MODE
+   ============================================ */
+body[data-theme="night"] {
+  background: var(--night-bg);
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .sky-bg {
+  background: linear-gradient(180deg, var(--night-sky) 0%, var(--night-sky-light) 100%);
+}
+
+body[data-theme="night"] .sun-toggle { display: none; }
+body[data-theme="night"] .moon-toggle { display: flex; }
+body[data-theme="day"] .moon-toggle { display: none; }
+
+body[data-theme="night"] .jungle-trees {
+  filter: brightness(0.6) saturate(0.7);
+}
+
+body[data-theme="night"] .ground-layer {
+  filter: brightness(0.4);
+}
+
+body[data-theme="night"] .smoke { display: block; }
+body[data-theme="day"] .smoke { display: none; }
+
+body[data-theme="night"] .app {
+  background: transparent;
+}
+
+body[data-theme="night"] .pixel-btn {
+  background: var(--night-primary);
+  border-color: var(--night-primary);
+  color: var(--night-bg);
+}
+
+body[data-theme="night"] .pixel-btn-secondary {
+  background: var(--night-card);
+  border-color: var(--night-border);
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .bottom-nav {
+  background: var(--night-card);
+  border-color: var(--night-border);
+}
+
+/* Home page only - transparent nav */
+#page-home.active ~ .bottom-nav {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+body[data-theme="night"] #page-home.active ~ .bottom-nav {
+  background: rgba(15, 23, 42, 0.15);
+  border-color: rgba(51, 65, 85, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+body[data-theme="night"] .nav-item {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .nav-item.active {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .collection-card {
+  background: var(--night-card);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .collection-card-name {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .collection-card.missing {
+  opacity: 0.3;
+}
+
+body[data-theme="night"] .filter-btn {
+  background: var(--night-card);
+  border-color: var(--night-border);
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .filter-btn.active {
+  background: var(--night-primary);
+  border-color: var(--night-primary);
+  color: var(--night-bg);
+}
+
+body[data-theme="night"] .collection-header {
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .collection-count {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .section-title {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .section-title::after {
+  background: var(--night-border);
+}
+
+body[data-theme="night"] .scan-counter {
+  background: var(--night-card);
+  border-color: var(--night-border);
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .logo-sub {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .card-front {
+  background: var(--night-primary);
+  border-color: var(--night-accent);
+}
+
+body[data-theme="night"] .card-back {
+  background: var(--night-card);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .card-image-area {
+  background: var(--night-bg);
+}
+
+body[data-theme="night"] .card-name {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .card-species {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .card-stat-value {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .modal-content {
+  background: var(--night-card);
+  border-color: var(--night-accent);
+}
+
+body[data-theme="night"] .modal-title {
+  color: var(--night-accent);
+}
+
+body[data-theme="night"] .modal-text {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .modal-close {
+  background: var(--night-bg);
+  border-color: var(--night-border);
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .modal-close:hover {
+  background: var(--night-card);
+  border-color: var(--night-border);
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .empty-state-text {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .viewfinder {
+  background: var(--night-card);
+  border-color: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-instructions {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .scan-counter-value {
+  color: var(--night-accent);
+}
+
+body[data-theme="night"] .new-badge {
+  background: var(--night-accent);
+  color: var(--night-bg);
+  border-color: var(--night-accent);
+}
+
+body[data-theme="night"] .reveal-page {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+body[data-theme="night"] .card-rarity-badge.common {
+  color: var(--rarity-common);
+  border-color: var(--rarity-common);
+  background: var(--night-card);
+}
+
+body[data-theme="night"] .card-rarity-badge.uncommon {
+  color: var(--rarity-uncommon);
+  border-color: var(--rarity-uncommon);
+  background: var(--night-card);
+}
+
+body[data-theme="night"] .card-rarity-badge.rare {
+  color: var(--rarity-rare);
+  border-color: var(--rarity-rare);
+  background: var(--night-card);
+}
+
+body[data-theme="night"] .card-rarity-badge.legendary {
+  color: var(--rarity-legendary);
+  border-color: var(--rarity-legendary);
+  background: var(--night-card);
+}
+
+body[data-theme="night"] .collection-card-rarity.common { color: var(--rarity-common); }
+body[data-theme="night"] .collection-card-rarity.uncommon { color: var(--rarity-uncommon); }
+body[data-theme="night"] .collection-card-rarity.rare { color: var(--rarity-rare); }
+body[data-theme="night"] .collection-card-rarity.legendary { color: var(--rarity-legendary); }
+
+/* Home page only - transparent for jungle view */
+#page-home .page-content {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+body[data-theme="night"] #page-home .page-content {
+  background: rgba(15, 23, 42, 0.15);
+  border-color: rgba(51, 65, 85, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+body[data-theme="night"] .page-content {
+  background: var(--night-card);
+  border-color: var(--night-border);
+}

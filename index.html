@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WildDex - Malaysian Tree Trading Card Game</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/app.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/scan.js" defer></script>
+  <script src="js/collection.js" defer></script>
+  <script src="js/reveal.js" defer></script>
+</head>
+<body data-theme="day">
+  <!-- Sky -->
+  <div class="sky-bg"></div>
+
+  <!-- Sun/Moon Toggle -->
+  <button class="toggle-btn sun-toggle" onclick="toggleTheme()" aria-label="Switch to night">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="6" fill="#FDB813"/><path d="M12 2V4M12 20V22M2 12H4M20 12H22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" stroke="#FDB813" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+  <button class="toggle-btn moon-toggle" onclick="toggleTheme()" aria-label="Switch to day">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#F8FAFC" stroke="#1A1B2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <!-- Jungle Scenery -->
+  <div class="jungle-scenery">
+    <div class="smoke">
+      <div class="smoke-particle" style="width: 60px; height: 60px; left: 10%; bottom: 0; animation-delay: 0s;"></div>
+      <div class="smoke-particle" style="width: 80px; height: 80px; left: 30%; bottom: 20px; animation-delay: 2s;"></div>
+      <div class="smoke-particle" style="width: 50px; height: 50px; left: 50%; bottom: 10px; animation-delay: 4s;"></div>
+      <div class="smoke-particle" style="width: 70px; height: 70px; left: 70%; bottom: 30px; animation-delay: 1s;"></div>
+      <div class="smoke-particle" style="width: 90px; height: 90px; left: 20%; bottom: 40px; animation-delay: 3s;"></div>
+      <div class="smoke-particle" style="width: 55px; height: 55px; left: 85%; bottom: 15px; animation-delay: 5s;"></div>
+      <div class="smoke-particle" style="width: 65px; height: 65px; left: 45%; bottom: 50px; animation-delay: 6s;"></div>
+      <div class="smoke-particle" style="width: 75px; height: 75px; left: 60%; bottom: 25px; animation-delay: 2.5s;"></div>
+    </div>
+
+    <div class="jungle-trees">
+      <!-- 30 packed fantasy trees - trunks go to bottom of viewBox -->
+      <!-- GIANT 1: left edge -->
+      <svg class="tree tree-giant" style="left: -8%; bottom: 0;" viewBox="0 0 110 550"><rect x="42" y="380" width="26" height="170" fill="#3E2723"/><rect x="38" y="400" width="6" height="150" fill="#2D1B15"/><rect x="68" y="410" width="5" height="140" fill="#2D1B15"/><rect x="20" y="320" width="70" height="60" fill="#0F2E1D"/><rect x="10" y="280" width="90" height="55" fill="#1B4332"/><rect x="5" y="240" width="100" height="50" fill="#2D6A4F"/><rect x="15" y="200" width="80" height="50" fill="#1B4332"/><rect x="20" y="160" width="70" height="50" fill="#40916C"/><rect x="25" y="120" width="60" height="50" fill="#2D6A4F"/><rect x="30" y="80" width="50" height="45" fill="#52B788"/><rect x="35" y="40" width="40" height="45" fill="#40916C"/><rect x="40" y="10" width="30" height="35" fill="#52B788"/><rect x="0" y="350" width="20" height="20" fill="#52B788"/><rect x="90" y="330" width="18" height="18" fill="#86EFAC"/><rect x="5" y="300" width="12" height="12" fill="#86EFAC"/></svg>
+      <!-- PALM 1 -->
+      <svg class="tree tree-palm" style="left: 2%; bottom: 0;" viewBox="0 0 70 450"><rect x="30" y="350" width="10" height="100" fill="#5D4037"/><rect x="28" y="340" width="6" height="40" fill="#4E342E"/><rect x="10" y="310" width="22" height="5" fill="#1B4332"/><rect x="8" y="290" width="26" height="5" fill="#2D6A4F"/><rect x="38" y="305" width="24" height="5" fill="#1B4332"/><rect x="36" y="285" width="28" height="5" fill="#2D6A4F"/><rect x="20" y="265" width="20" height="5" fill="#40916C"/><rect x="40" y="260" width="18" height="5" fill="#40916C"/><rect x="15" y="245" width="15" height="5" fill="#52B788"/><rect x="45" y="240" width="14" height="5" fill="#52B788"/><rect x="25" y="225" width="12" height="5" fill="#86EFAC"/><rect x="5" y="355" width="10" height="4" fill="#86EFAC"/><rect x="56" y="345" width="8" height="4" fill="#86EFAC"/></svg>
+      <!-- TALL 1 -->
+      <svg class="tree tree-tall" style="left: 8%; bottom: 0;" viewBox="0 0 90 550"><rect x="36" y="400" width="18" height="150" fill="#5D4037"/><rect x="32" y="420" width="4" height="130" fill="#4E342E"/><rect x="54" y="430" width="4" height="120" fill="#4E342E"/><rect x="20" y="340" width="50" height="55" fill="#1B4332"/><rect x="12" y="300" width="66" height="50" fill="#2D6A4F"/><rect x="18" y="260" width="54" height="45" fill="#1B4332"/><rect x="22" y="220" width="46" height="45" fill="#40916C"/><rect x="26" y="180" width="38" height="40" fill="#2D6A4F"/><rect x="30" y="140" width="30" height="40" fill="#52B788"/><rect x="34" y="100" width="22" height="40" fill="#40916C"/><rect x="38" y="60" width="14" height="40" fill="#52B788"/><rect x="42" y="30" width="8" height="30" fill="#86EFAC"/><rect x="5" y="380" width="12" height="12" fill="#86EFAC"/><rect x="72" y="360" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- BUSH 1 -->
+      <svg class="tree tree-bush" style="left: 14%; bottom: 0;" viewBox="0 0 50 160"><rect x="18" y="80" width="14" height="80" fill="#5D4037"/><rect x="15" y="90" width="4" height="60" fill="#4E342E"/><rect x="8" y="60" width="34" height="25" fill="#1B4332"/><rect x="12" y="45" width="26" height="20" fill="#2D6A4F"/><rect x="15" y="30" width="20" height="18" fill="#40916C"/><rect x="18" y="18" width="14" height="15" fill="#52B788"/><rect x="20" y="8" width="10" height="12" fill="#86EFAC"/><rect x="0" y="70" width="8" height="8" fill="#52B788"/><rect x="42" y="68" width="6" height="6" fill="#52B788"/></svg>
+      <!-- FERN 1 -->
+      <svg class="tree tree-fern" style="left: 20%; bottom: 0;" viewBox="0 0 35 140"><rect x="14" y="70" width="7" height="70" fill="#5D4037"/><path d="M10 80 L4 75 L10 78 M17 75 L24 70 L17 73" stroke="#1B4332" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M10 95 L4 90 L10 93 M17 90 L24 85 L17 88" stroke="#2D6A4F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M10 110 L3 105 L10 108 M17 105 L25 100 L17 103" stroke="#40916C" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 125 L2 120 L10 123 M17 120 L26 115 L17 118" stroke="#52B788" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <!-- TALL 2 -->
+      <svg class="tree tree-tall" style="left: 26%; bottom: 0;" viewBox="0 0 90 550"><rect x="34" y="390" width="22" height="160" fill="#5D4037"/><rect x="30" y="410" width="4" height="140" fill="#4E342E"/><rect x="56" y="420" width="4" height="130" fill="#4E342E"/><rect x="15" y="330" width="60" height="55" fill="#0F2E1D"/><rect x="10" y="290" width="70" height="50" fill="#1B4332"/><rect x="15" y="250" width="60" height="45" fill="#2D6A4F"/><rect x="20" y="210" width="50" height="45" fill="#1B4332"/><rect x="25" y="170" width="40" height="40" fill="#40916C"/><rect x="30" y="130" width="30" height="40" fill="#2D6A4F"/><rect x="33" y="90" width="24" height="40" fill="#52B788"/><rect x="36" y="50" width="18" height="40" fill="#40916C"/><rect x="40" y="20" width="10" height="30" fill="#86EFAC"/><rect x="5" y="370" width="15" height="15" fill="#52B788"/><rect x="78" y="350" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- VINE 1 -->
+      <svg class="tree tree-vine" style="left: 32%; bottom: 0;" viewBox="0 0 80 480"><rect x="34" y="360" width="12" height="120" fill="#5D4037"/><rect x="30" y="380" width="4" height="100" fill="#4E342E"/><rect x="48" y="370" width="3" height="110" fill="#4E342E"/><rect x="20" y="300" width="40" height="55" fill="#1B4332"/><rect x="15" y="260" width="50" height="45" fill="#2D6A4F"/><rect x="20" y="220" width="40" height="45" fill="#1B4332"/><rect x="25" y="180" width="30" height="40" fill="#40916C"/><rect x="28" y="140" width="24" height="40" fill="#2D6A4F"/><rect x="30" y="100" width="20" height="40" fill="#52B788"/><rect x="32" y="60" width="16" height="40" fill="#40916C"/><rect x="34" y="25" width="12" height="35" fill="#86EFAC"/><rect x="10" y="200" width="4" height="80" fill="#2D6A4F"/><rect x="62" y="180" width="4" height="100" fill="#40916C"/><rect x="8" y="340" width="6" height="8" fill="#86EFAC"/><rect x="66" y="330" width="6" height="8" fill="#86EFAC"/></svg>
+      <!-- TALL 3 -->
+      <svg class="tree tree-tall" style="left: 38%; bottom: 0;" viewBox="0 0 90 550"><rect x="38" y="410" width="14" height="140" fill="#5D4037"/><rect x="32" y="430" width="6" height="120" fill="#4E342E"/><rect x="52" y="420" width="4" height="130" fill="#4E342E"/><rect x="24" y="340" width="42" height="55" fill="#1B4332"/><rect x="18" y="300" width="54" height="50" fill="#2D6A4F"/><rect x="22" y="260" width="46" height="45" fill="#1B4332"/><rect x="26" y="220" width="38" height="40" fill="#40916C"/><rect x="30" y="180" width="30" height="40" fill="#2D6A4F"/><rect x="33" y="140" width="24" height="40" fill="#52B788"/><rect x="36" y="100" width="18" height="40" fill="#40916C"/><rect x="38" y="60" width="14" height="40" fill="#86EFAC"/><rect x="40" y="30" width="10" height="30" fill="#52B788"/><rect x="12" y="370" width="10" height="10" fill="#86EFAC"/><rect x="66" y="350" width="8" height="8" fill="#86EFAC"/></svg>
+      <!-- BUSH 2 -->
+      <svg class="tree tree-bush" style="left: 44%; bottom: 0;" viewBox="0 0 50 160"><rect x="20" y="85" width="10" height="75" fill="#5D4037"/><rect x="17" y="95" width="3" height="55" fill="#4E342E"/><rect x="10" y="65" width="30" height="22" fill="#1B4332"/><rect x="14" y="50" width="22" height="18" fill="#2D6A4F"/><rect x="18" y="35" width="14" height="15" fill="#40916C"/><rect x="20" y="22" width="10" height="15" fill="#52B788"/><rect x="22" y="10" width="6" height="12" fill="#86EFAC"/><rect x="5" y="75" width="6" height="6" fill="#52B788"/><rect x="40" y="72" width="5" height="5" fill="#52B788"/></svg>
+      <!-- FERN 2 -->
+      <svg class="tree tree-fern" style="left: 50%; bottom: 0;" viewBox="0 0 35 140"><rect x="15" y="75" width="5" height="65" fill="#5D4037"/><path d="M12 85 L6 80 L12 83 M18 80 L24 75 L18 78" stroke="#1B4332" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M12 100 L5 95 L12 98 M18 95 L25 90 L18 93" stroke="#2D6A4F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M12 115 L4 110 L12 113 M18 110 L26 105 L18 108" stroke="#40916C" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M12 130 L3 125 L12 128 M18 125 L27 120 L18 123" stroke="#52B788" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <!-- TALL 4 -->
+      <svg class="tree tree-tall" style="left: 56%; bottom: 0;" viewBox="0 0 90 550"><rect x="34" y="395" width="22" height="155" fill="#5D4037"/><rect x="30" y="415" width="4" height="135" fill="#4E342E"/><rect x="56" y="405" width="4" height="145" fill="#4E342E"/><rect x="18" y="330" width="54" height="55" fill="#0F2E1D"/><rect x="12" y="290" width="66" height="50" fill="#1B4332"/><rect x="18" y="250" width="54" height="45" fill="#2D6A4F"/><rect x="22" y="210" width="46" height="45" fill="#1B4332"/><rect x="26" y="170" width="38" height="40" fill="#40916C"/><rect x="30" y="130" width="30" height="40" fill="#2D6A4F"/><rect x="33" y="90" width="24" height="40" fill="#52B788"/><rect x="36" y="50" width="18" height="40" fill="#40916C"/><rect x="38" y="20" width="14" height="30" fill="#86EFAC"/><rect x="8" y="370" width="14" height="14" fill="#52B788"/><rect x="76" y="350" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- PALM 2 -->
+      <svg class="tree tree-palm" style="left: 62%; bottom: 0;" viewBox="0 0 70 450"><rect x="29" y="355" width="12" height="95" fill="#5D4037"/><rect x="27" y="345" width="5" height="40" fill="#4E342E"/><rect x="10" y="315" width="24" height="5" fill="#1B4332"/><rect x="8" y="295" width="28" height="5" fill="#2D6A4F"/><rect x="38" y="310" width="22" height="5" fill="#1B4332"/><rect x="36" y="290" width="26" height="5" fill="#2D6A4F"/><rect x="20" y="270" width="18" height="5" fill="#40916C"/><rect x="42" y="265" width="16" height="5" fill="#40916C"/><rect x="15" y="250" width="14" height="5" fill="#52B788"/><rect x="47" y="245" width="12" height="5" fill="#52B788"/><rect x="28" y="230" width="10" height="5" fill="#86EFAC"/><rect x="5" y="360" width="10" height="4" fill="#86EFAC"/><rect x="58" y="350" width="8" height="4" fill="#86EFAC"/></svg>
+      <!-- TALL 5 -->
+      <svg class="tree tree-tall" style="left: 68%; bottom: 0;" viewBox="0 0 90 550"><rect x="36" y="405" width="18" height="145" fill="#5D4037"/><rect x="30" y="425" width="6" height="125" fill="#4E342E"/><rect x="54" y="415" width="4" height="135" fill="#4E342E"/><rect x="22" y="340" width="46" height="55" fill="#1B4332"/><rect x="16" y="300" width="58" height="50" fill="#2D6A4F"/><rect x="20" y="260" width="50" height="45" fill="#1B4332"/><rect x="24" y="220" width="42" height="40" fill="#40916C"/><rect x="28" y="180" width="34" height="40" fill="#2D6A4F"/><rect x="32" y="140" width="26" height="40" fill="#52B788"/><rect x="35" y="100" width="20" height="40" fill="#40916C"/><rect x="38" y="60" width="14" height="40" fill="#86EFAC"/><rect x="40" y="25" width="10" height="35" fill="#52B788"/><rect x="10" y="375" width="12" height="12" fill="#86EFAC"/><rect x="72" y="355" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- BUSH 3 -->
+      <svg class="tree tree-bush" style="left: 74%; bottom: 0;" viewBox="0 0 50 160"><rect x="19" y="82" width="12" height="78" fill="#5D4037"/><rect x="16" y="92" width="3" height="58" fill="#4E342E"/><rect x="9" y="62" width="32" height="24" fill="#1B4332"/><rect x="13" y="47" width="24" height="19" fill="#2D6A4F"/><rect x="16" y="33" width="18" height="16" fill="#40916C"/><rect x="18" y="20" width="14" height="14" fill="#52B788"/><rect x="20" y="8" width="10" height="12" fill="#86EFAC"/><rect x="4" y="72" width="7" height="7" fill="#52B788"/><rect x="43" y="70" width="5" height="5" fill="#52B788"/></svg>
+      <!-- FERN 3 -->
+      <svg class="tree tree-fern" style="left: 80%; bottom: 0;" viewBox="0 0 35 140"><rect x="13" y="72" width="9" height="68" fill="#5D4037"/><path d="M9 82 L3 77 L9 80 M17 77 L23 72 L17 75" stroke="#1B4332" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M9 97 L3 92 L9 95 M17 92 L24 87 L17 90" stroke="#2D6A4F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M9 112 L2 107 L9 110 M17 107 L25 102 L17 105" stroke="#40916C" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M9 127 L1 122 L9 125 M17 122 L27 117 L17 120" stroke="#52B788" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <!-- TALL 6 -->
+      <svg class="tree tree-tall" style="left: 86%; bottom: 0;" viewBox="0 0 90 550"><rect x="33" y="385" width="24" height="165" fill="#5D4037"/><rect x="30" y="405" width="3" height="145" fill="#4E342E"/><rect x="57" y="395" width="3" height="155" fill="#4E342E"/><rect x="18" y="320" width="54" height="55" fill="#0F2E1D"/><rect x="12" y="280" width="66" height="50" fill="#1B4332"/><rect x="18" y="240" width="54" height="45" fill="#2D6A4F"/><rect x="22" y="200" width="46" height="45" fill="#1B4332"/><rect x="26" y="160" width="38" height="40" fill="#40916C"/><rect x="30" y="120" width="30" height="40" fill="#2D6A4F"/><rect x="33" y="80" width="24" height="40" fill="#52B788"/><rect x="36" y="40" width="18" height="40" fill="#40916C"/><rect x="38" y="10" width="14" height="30" fill="#86EFAC"/><rect x="8" y="355" width="14" height="14" fill="#52B788"/><rect x="76" y="335" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- PALM 3 -->
+      <svg class="tree tree-palm" style="left: 92%; bottom: 0;" viewBox="0 0 70 450"><rect x="28" y="350" width="14" height="100" fill="#5D4037"/><rect x="26" y="340" width="5" height="45" fill="#4E342E"/><rect x="10" y="310" width="26" height="5" fill="#1B4332"/><rect x="8" y="290" width="30" height="5" fill="#2D6A4F"/><rect x="38" y="305" width="24" height="5" fill="#1B4332"/><rect x="36" y="285" width="28" height="5" fill="#2D6A4F"/><rect x="18" y="265" width="20" height="5" fill="#40916C"/><rect x="44" y="260" width="18" height="5" fill="#40916C"/><rect x="12" y="245" width="16" height="5" fill="#52B788"/><rect x="50" y="240" width="14" height="5" fill="#52B788"/><rect x="30" y="225" width="12" height="5" fill="#86EFAC"/><rect x="5" y="355" width="12" height="4" fill="#86EFAC"/><rect x="56" y="345" width="10" height="4" fill="#86EFAC"/></svg>
+      <!-- GIANT 2: mid-left -->
+      <svg class="tree tree-giant" style="left: -3%; bottom: 0;" viewBox="0 0 110 550"><rect x="40" y="370" width="30" height="180" fill="#3E2723"/><rect x="36" y="390" width="6" height="160" fill="#2D1B15"/><rect x="70" y="400" width="5" height="150" fill="#2D1B15"/><rect x="18" y="310" width="74" height="60" fill="#0F2E1D"/><rect x="8" y="270" width="94" height="55" fill="#1B4332"/><rect x="3" y="230" width="104" height="50" fill="#2D6A4F"/><rect x="13" y="190" width="84" height="50" fill="#1B4332"/><rect x="18" y="150" width="74" height="50" fill="#40916C"/><rect x="23" y="110" width="64" height="50" fill="#2D6A4F"/><rect x="28" y="70" width="54" height="45" fill="#52B788"/><rect x="33" y="35" width="44" height="40" fill="#40916C"/><rect x="38" y="10" width="34" height="30" fill="#52B788"/><rect x="0" y="340" width="22" height="22" fill="#52B788"/><rect x="92" y="320" width="16" height="16" fill="#86EFAC"/><rect x="5" y="290" width="14" height="14" fill="#86EFAC"/></svg>
+      <!-- TALL 7: mid -->
+      <svg class="tree tree-tall" style="left: 11%; bottom: 0;" viewBox="0 0 90 550"><rect x="35" y="395" width="20" height="155" fill="#5D4037"/><rect x="31" y="415" width="4" height="135" fill="#4E342E"/><rect x="55" y="405" width="4" height="145" fill="#4E342E"/><rect x="18" y="330" width="54" height="55" fill="#1B4332"/><rect x="12" y="290" width="66" height="50" fill="#2D6A4F"/><rect x="18" y="250" width="54" height="45" fill="#1B4332"/><rect x="23" y="210" width="44" height="45" fill="#40916C"/><rect x="27" y="170" width="36" height="40" fill="#2D6A4F"/><rect x="30" y="130" width="30" height="40" fill="#52B788"/><rect x="33" y="90" width="24" height="40" fill="#40916C"/><rect x="36" y="50" width="18" height="40" fill="#86EFAC"/><rect x="38" y="20" width="14" height="30" fill="#52B788"/><rect x="5" y="370" width="14" height="14" fill="#52B788"/><rect x="78" y="350" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- VINE 2: mid-right -->
+      <svg class="tree tree-vine" style="left: 29%; bottom: 0;" viewBox="0 0 80 480"><rect x="32" y="370" width="16" height="110" fill="#5D4037"/><rect x="28" y="390" width="4" height="90" fill="#4E342E"/><rect x="50" y="380" width="3" height="100" fill="#4E342E"/><rect x="18" y="310" width="44" height="55" fill="#1B4332"/><rect x="13" y="270" width="54" height="45" fill="#2D6A4F"/><rect x="18" y="230" width="44" height="45" fill="#1B4332"/><rect x="23" y="190" width="34" height="40" fill="#40916C"/><rect x="26" y="150" width="28" height="40" fill="#2D6A4F"/><rect x="28" y="110" width="24" height="40" fill="#52B788"/><rect x="30" y="70" width="20" height="40" fill="#40916C"/><rect x="32" y="35" width="16" height="35" fill="#86EFAC"/><rect x="8" y="210" width="4" height="70" fill="#2D6A4F"/><rect x="60" y="190" width="4" height="90" fill="#40916C"/><rect x="6" y="350" width="6" height="8" fill="#86EFAC"/><rect x="64" y="340" width="6" height="8" fill="#86EFAC"/></svg>
+      <!-- TALL 8: center -->
+      <svg class="tree tree-tall" style="left: 47%; bottom: 0;" viewBox="0 0 90 550"><rect x="37" y="400" width="16" height="150" fill="#5D4037"/><rect x="33" y="420" width="4" height="130" fill="#4E342E"/><rect x="53" y="410" width="4" height="140" fill="#4E342E"/><rect x="20" y="335" width="50" height="55" fill="#0F2E1D"/><rect x="14" y="295" width="62" height="50" fill="#1B4332"/><rect x="19" y="255" width="52" height="45" fill="#2D6A4F"/><rect x="24" y="215" width="42" height="45" fill="#1B4332"/><rect x="28" y="175" width="34" height="40" fill="#40916C"/><rect x="31" y="135" width="28" height="40" fill="#2D6A4F"/><rect x="34" y="95" width="22" height="40" fill="#52B788"/><rect x="36" y="55" width="18" height="40" fill="#40916C"/><rect x="38" y="20" width="14" height="35" fill="#86EFAC"/><rect x="8" y="375" width="12" height="12" fill="#52B788"/><rect x="74" y="355" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- TALL 9: right-mid -->
+      <svg class="tree tree-tall" style="left: 65%; bottom: 0;" viewBox="0 0 90 550"><rect x="34" y="390" width="22" height="160" fill="#5D4037"/><rect x="30" y="410" width="4" height="140" fill="#4E342E"/><rect x="56" y="400" width="4" height="150" fill="#4E342E"/><rect x="16" y="325" width="58" height="55" fill="#1B4332"/><rect x="10" y="285" width="70" height="50" fill="#2D6A4F"/><rect x="16" y="245" width="58" height="45" fill="#1B4332"/><rect x="21" y="205" width="48" height="45" fill="#40916C"/><rect x="25" y="165" width="40" height="40" fill="#2D6A4F"/><rect x="29" y="125" width="32" height="40" fill="#52B788"/><rect x="32" y="85" width="26" height="40" fill="#40916C"/><rect x="35" y="45" width="20" height="40" fill="#86EFAC"/><rect x="37" y="15" width="16" height="30" fill="#52B788"/><rect x="5" y="365" width="14" height="14" fill="#52B788"/><rect x="76" y="345" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- GIANT 3: far right -->
+      <svg class="tree tree-giant" style="left: 83%; bottom: 0;" viewBox="0 0 110 550"><rect x="43" y="375" width="24" height="175" fill="#3E2723"/><rect x="39" y="395" width="5" height="155" fill="#2D1B15"/><rect x="67" y="385" width="4" height="165" fill="#2D1B15"/><rect x="22" y="315" width="66" height="60" fill="#0F2E1D"/><rect x="12" y="275" width="86" height="55" fill="#1B4332"/><rect x="7" y="235" width="96" height="50" fill="#2D6A4F"/><rect x="17" y="195" width="76" height="50" fill="#1B4332"/><rect x="22" y="155" width="66" height="50" fill="#40916C"/><rect x="27" y="115" width="56" height="50" fill="#2D6A4F"/><rect x="32" y="75" width="46" height="45" fill="#52B788"/><rect x="37" y="40" width="36" height="40" fill="#40916C"/><rect x="42" y="15" width="26" height="30" fill="#86EFAC"/><rect x="0" y="345" width="20" height="20" fill="#52B788"/><rect x="92" y="325" width="16" height="16" fill="#86EFAC"/><rect x="5" y="295" width="14" height="14" fill="#86EFAC"/></svg>
+      <!-- TALL 10: far right edge -->
+      <svg class="tree tree-tall" style="left: 95%; bottom: 0;" viewBox="0 0 90 550"><rect x="36" y="385" width="18" height="165" fill="#5D4037"/><rect x="32" y="405" width="4" height="145" fill="#4E342E"/><rect x="54" y="395" width="4" height="155" fill="#4E342E"/><rect x="20" y="320" width="50" height="55" fill="#0F2E1D"/><rect x="14" y="280" width="62" height="50" fill="#1B4332"/><rect x="19" y="240" width="52" height="45" fill="#2D6A4F"/><rect x="24" y="200" width="42" height="45" fill="#1B4332"/><rect x="28" y="160" width="34" height="40" fill="#40916C"/><rect x="31" y="120" width="28" height="40" fill="#2D6A4F"/><rect x="34" y="80" width="22" height="40" fill="#52B788"/><rect x="36" y="40" width="18" height="40" fill="#40916C"/><rect x="38" y="10" width="14" height="30" fill="#86EFAC"/><rect x="8" y="360" width="12" height="12" fill="#52B788"/><rect x="74" y="340" width="10" height="10" fill="#86EFAC"/></svg>
+      <!-- BUSH 4: between trees -->
+      <svg class="tree tree-bush" style="left: 5%; bottom: 0;" viewBox="0 0 50 160"><rect x="18" y="78" width="14" height="82" fill="#5D4037"/><rect x="15" y="88" width="4" height="62" fill="#4E342E"/><rect x="8" y="58" width="34" height="26" fill="#1B4332"/><rect x="12" y="43" width="26" height="20" fill="#2D6A4F"/><rect x="15" y="30" width="20" height="16" fill="#40916C"/><rect x="17" y="18" width="16" height="14" fill="#52B788"/><rect x="19" y="8" width="12" height="12" fill="#86EFAC"/><rect x="0" y="68" width="8" height="8" fill="#52B788"/><rect x="42" y="66" width="6" height="6" fill="#52B788"/></svg>
+      <!-- BUSH 5: center-right -->
+      <svg class="tree tree-bush" style="left: 41%; bottom: 0;" viewBox="0 0 50 160"><rect x="20" y="80" width="10" height="80" fill="#5D4037"/><rect x="17" y="90" width="3" height="60" fill="#4E342E"/><rect x="10" y="60" width="30" height="25" fill="#1B4332"/><rect x="14" y="45" width="22" height="20" fill="#2D6A4F"/><rect x="17" y="32" width="16" height="15" fill="#40916C"/><rect x="19" y="20" width="12" height="14" fill="#52B788"/><rect x="21" y="10" width="8" height="12" fill="#86EFAC"/><rect x="5" y="70" width="6" height="6" fill="#52B788"/><rect x="40" y="68" width="5" height="5" fill="#52B788"/></svg>
+      <!-- BUSH 6: far right -->
+      <svg class="tree tree-bush" style="left: 77%; bottom: 0;" viewBox="0 0 50 160"><rect x="19" y="80" width="12" height="80" fill="#5D4037"/><rect x="16" y="90" width="3" height="60" fill="#4E342E"/><rect x="9" y="60" width="32" height="24" fill="#1B4332"/><rect x="13" y="45" width="24" height="19" fill="#2D6A4F"/><rect x="16" y="32" width="18" height="16" fill="#40916C"/><rect x="18" y="20" width="14" height="14" fill="#52B788"/><rect x="20" y="10" width="10" height="12" fill="#86EFAC"/><rect x="4" y="70" width="7" height="7" fill="#52B788"/><rect x="43" y="68" width="5" height="5" fill="#52B788"/></svg>
+      <!-- FERN 4: left-mid -->
+      <svg class="tree tree-fern" style="left: 17%; bottom: 0;" viewBox="0 0 35 140"><rect x="14" y="70" width="7" height="70" fill="#5D4037"/><path d="M10 80 L4 75 L10 78 M17 75 L24 70 L17 73" stroke="#1B4332" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M10 95 L4 90 L10 93 M17 90 L24 85 L17 88" stroke="#2D6A4F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M10 110 L3 105 L10 108 M17 105 L25 100 L17 103" stroke="#40916C" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 125 L2 120 L10 123 M17 120 L26 115 L17 118" stroke="#52B788" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <!-- FERN 5: center -->
+      <svg class="tree tree-fern" style="left: 53%; bottom: 0;" viewBox="0 0 35 140"><rect x="15" y="72" width="5" height="68" fill="#5D4037"/><path d="M12 82 L6 77 L12 80 M18 77 L24 72 L18 75" stroke="#1B4332" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M12 97 L5 92 L12 95 M18 92 L25 87 L18 90" stroke="#2D6A4F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M12 112 L4 107 L12 110 M18 107 L26 102 L18 105" stroke="#40916C" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M12 127 L3 122 L12 125 M18 122 L27 117 L18 120" stroke="#52B788" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <!-- FERN 6: right edge -->
+      <svg class="tree tree-fern" style="left: 89%; bottom: 0;" viewBox="0 0 35 140"><rect x="13" y="70" width="9" height="70" fill="#5D4037"/><path d="M9 80 L3 75 L9 78 M17 75 L23 70 L17 73" stroke="#1B4332" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M9 95 L3 90 L9 93 M17 90 L24 85 L17 88" stroke="#2D6A4F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M9 110 L2 105 L9 108 M17 105 L25 100 L17 103" stroke="#40916C" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M9 125 L1 120 L9 123 M17 120 L27 115 L17 118" stroke="#52B788" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <!-- GIANT 4: center overlap -->
+      <svg class="tree tree-giant" style="left: 35%; bottom: 0;" viewBox="0 0 110 550"><rect x="41" y="365" width="28" height="185" fill="#3E2723"/><rect x="37" y="385" width="5" height="165" fill="#2D1B15"/><rect x="69" y="375" width="4" height="175" fill="#2D1B15"/><rect x="20" y="300" width="70" height="60" fill="#0F2E1D"/><rect x="10" y="260" width="90" height="55" fill="#1B4332"/><rect x="5" y="220" width="100" height="50" fill="#2D6A4F"/><rect x="15" y="180" width="80" height="50" fill="#1B4332"/><rect x="20" y="140" width="70" height="50" fill="#40916C"/><rect x="25" y="100" width="60" height="50" fill="#2D6A4F"/><rect x="30" y="60" width="50" height="45" fill="#52B788"/><rect x="35" y="30" width="40" height="40" fill="#40916C"/><rect x="40" y="10" width="30" height="25" fill="#86EFAC"/><rect x="0" y="335" width="20" height="20" fill="#52B788"/><rect x="90" y="315" width="18" height="18" fill="#86EFAC"/><rect x="5" y="285" width="12" height="12" fill="#86EFAC"/></svg>
+    </div>
+
+    <div class="ground-layer">
+      <div class="ground-back"></div>
+      <div class="ground-front"></div>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div class="app">
+    <!-- HOME -->
+    <main id="page-home" class="page active">
+      <div class="page-content">
+        <div class="home-hero">
+          <div class="logo">WildDex</div>
+          <div class="logo-sub">Gotta Log 'Em All!</div>
+          <div class="scan-counter">
+            <span>Scans:</span>
+            <span class="scan-counter-value" id="scan-counter">0 / 5</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 280px;">
+            <button class="pixel-btn" onclick="goScan()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg>
+              Scan Tree
+            </button>
+            <button class="pixel-btn pixel-btn-secondary" onclick="goCollection()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+              Collection
+            </button>
+          </div>
+        </div>
+        <div class="recent-collection">
+          <div class="section-title">Recent Finds</div>
+          <div class="mini-collection" id="recent-finds"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- SCAN -->
+    <section id="page-scan" class="page">
+      <div class="page-content" style="flex: 1; display: flex; flex-direction: column;">
+        <div class="scan-container">
+          <div class="viewfinder">
+            <video id="camera-video" style="width: 100%; height: 100%; object-fit: cover; display: none;" autoplay playsinline muted></video>
+            <div id="camera-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--day-muted);">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div id="model-loading" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--day-primary); font-family: var(--font-heading); font-size: 10px;">Loading AI...</div>
+          </div>
+          <p class="scan-instructions">Point camera at a Malaysian tree</p>
+          <button class="pixel-btn" id="scan-btn" style="width: 80px; height: 80px; border-radius: 50%; padding: 0;" onclick="performScan()">
+            <div style="width: 56px; height: 56px; border-radius: 50%; border: 4px solid white;"></div>
+          </button>
+          <div class="scan-counter">
+            <span>Scans:</span>
+            <span class="scan-counter-value">0 / 5</span>
+          </div>
+          <label class="image-upload-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload Image
+            <input type="file" id="file-upload" accept="image/*" onchange="handleFileUpload(event)">
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLLECTION -->
+    <section id="page-collection" class="page">
+      <div class="page-content">
+        <div class="collection-header">
+          <h2 class="section-title" style="margin-bottom: 0; flex: 1;">Collection</h2>
+          <div class="collection-count">
+            <span id="collection-count">3</span> / 10
+          </div>
+        </div>
+        <div class="collection-filters">
+          <button class="filter-btn active" data-filter="all" onclick="filterCollection('all')">All</button>
+          <button class="filter-btn" data-filter="owned" onclick="filterCollection('owned')">Owned</button>
+          <button class="filter-btn" data-filter="common" onclick="filterCollection('common')">Common</button>
+          <button class="filter-btn" data-filter="uncommon" onclick="filterCollection('uncommon')">Uncommon</button>
+          <button class="filter-btn" data-filter="rare" onclick="filterCollection('rare')">Rare</button>
+          <button class="filter-btn" data-filter="legendary" onclick="filterCollection('legendary')">Legendary</button>
+        </div>
+        <div class="collection-grid" id="collection-grid"></div>
+      </div>
+    </section>
+
+    <!-- REVEAL -->
+    <section id="page-reveal" class="page hidden">
+      <div class="reveal-page">
+        <div class="new-badge hidden" id="new-badge">NEW!</div>
+        <div class="card-scene">
+          <div class="card-wrapper" id="card-wrapper">
+            <div class="card-face card-front">
+              <svg viewBox="0 0 32 32" width="64" height="64"><rect x="12" y="4" width="8" height="8" fill="#52B788"/><rect x="10" y="8" width="12" height="8" fill="#2D6A4F"/><rect x="8" y="12" width="16" height="8" fill="#1B4332"/><rect x="14" y="20" width="4" height="8" fill="#8B6914"/></svg>
+              <div style="font-family: var(--font-heading); font-size: 12px; color: var(--day-accent); text-align: center;">WildDex<br>Card</div>
+              <div style="font-family: var(--font-body); font-size: 14px; color: var(--day-bg);">Tap to reveal</div>
+            </div>
+            <div class="card-face card-back" id="revealed-card"></div>
+          </div>
+        </div>
+        <div class="reveal-actions" id="reveal-actions" style="opacity: 0; transition: opacity 0.3s;">
+          <button class="pixel-btn" onclick="saveAndGoHome()">Add to Collection</button>
+          <button class="pixel-btn pixel-btn-secondary" onclick="goScan()">Scan Again</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="goHome()">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12 L12 3 L21 12"/><path d="M9 21 V12 H15 V21"/><path d="M5 21 H19"/></svg>
+        Home
+      </button>
+      <button class="nav-item" onclick="goScan()">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg>
+        Scan
+      </button>
+      <button class="nav-item" onclick="goCollection()">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Cards
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="freemium-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeFreemium()">X</button>
+      <div class="modal-title">Scan Limit Reached!</div>
+      <div class="modal-text">You've used all <strong>5 free scans</strong> today.</div>
+      <div class="modal-highlight">Upgrade to WildDex Pro for unlimited scans!</div>
+      <div class="modal-actions">
+        <button class="pixel-btn" style="background: var(--day-accent); border-color: var(--day-accent);" onclick="alert('Payment flow')">Upgrade $2.99/mo</button>
+        <button class="pixel-btn pixel-btn-secondary" onclick="closeFreemium(); goHome();">Back to Home</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,270 @@
+/* ============================================
+   WILDDEX - BASE STYLES, VARIABLES, RESET
+   ============================================ */
+:root {
+  /* Day (Light) */
+  --day-sky: #87CEEB;
+  --day-sky-light: #B0E0E6;
+  --day-bg: #F0FDF4;
+  --day-card: #FFFFFF;
+  --day-text: #1A1A1A;
+  --day-muted: #4A5568;
+  --day-primary: #2D6A4F;
+  --day-accent: #D4AF37;
+  --day-border: #E2E8F0;
+  
+  /* Night (Dark) */
+  --night-sky: #1A1B2E;
+  --night-sky-light: #2D2D44;
+  --night-bg: #0F172A;
+  --night-card: #1E293B;
+  --night-text: #E2E8F0;
+  --night-muted: #94A3B8;
+  --night-primary: #4ADE80;
+  --night-accent: #D4AF37;
+  --night-border: #334155;
+  
+  /* Jungle */
+  --tree-trunk: #5D4037;
+  --tree-dark: #2D6A4F;
+  --tree-light: #4ADE80;
+  --tree-bright: #86EFAC;
+  --bush-dark: #1B4332;
+  --bush-light: #2D6A4F;
+  --ground-dark: #3E2723;
+  --ground-light: #5D4037;
+  --ground-grass: #2D6A4F;
+  --sun-color: #FDB813;
+  --moon-color: #F8FAFC;
+  
+  /* Rarity */
+  --rarity-common: #6B7280;
+  --rarity-common-bg: #F3F4F6;
+  --rarity-uncommon: #2D6A4F;
+  --rarity-uncommon-bg: #D8F3DC;
+  --rarity-rare: #1565C0;
+  --rarity-rare-bg: #E3F2FD;
+  --rarity-legendary: #B8860B;
+  --rarity-legendary-bg: #F5E6C8;
+  
+  --font-heading: 'Press Start 2P', cursive;
+  --font-body: 'VT323', monospace;
+  --space: 8px;
+  --pixel: 4px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--day-bg);
+  color: var(--day-text);
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* ============================================
+   SKY & JUNGLE (z-index 1-5)
+   ============================================ */
+.sky-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, var(--day-sky) 0%, var(--day-sky-light) 60%, var(--day-bg) 100%);
+  z-index: 1;
+}
+
+.jungle-scenery {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.jungle-trees {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: filter 0.5s ease;
+}
+
+.tree {
+  position: absolute;
+  bottom: 0;
+  image-rendering: pixelated;
+}
+
+/* Tall trees */
+.tree-tall { width: 110px; height: 500px; }
+.tree-palm { width: 80px; height: 420px; }
+.tree-bush { width: 60px; height: 160px; }
+.tree-fern { width: 45px; height: 140px; }
+.tree-giant { width: 130px; height: 550px; }
+.tree-vine { width: 100px; height: 480px; }
+.tree-pine { width: 90px; height: 520px; }
+
+/* Packed overlapping positions - dense fantasy jungle */
+.tree:nth-child(1) { left: -6%; }
+.tree:nth-child(2) { left: 2%; }
+.tree:nth-child(3) { left: 8%; }
+.tree:nth-child(4) { left: 14%; }
+.tree:nth-child(5) { left: 20%; }
+.tree:nth-child(6) { left: 26%; }
+.tree:nth-child(7) { left: 32%; }
+.tree:nth-child(8) { left: 38%; }
+.tree:nth-child(9) { left: 44%; }
+.tree:nth-child(10) { left: 50%; }
+.tree:nth-child(11) { left: 56%; }
+.tree:nth-child(12) { left: 62%; }
+.tree:nth-child(13) { left: 68%; }
+.tree:nth-child(14) { left: 74%; }
+.tree:nth-child(15) { left: 80%; }
+.tree:nth-child(16) { left: 86%; }
+.tree:nth-child(17) { left: 92%; }
+.tree:nth-child(18) { left: -3%; }
+.tree:nth-child(19) { left: 11%; }
+.tree:nth-child(20) { left: 29%; }
+.tree:nth-child(21) { left: 47%; }
+.tree:nth-child(22) { left: 65%; }
+.tree:nth-child(23) { left: 83%; }
+.tree:nth-child(24) { left: 5%; }
+.tree:nth-child(25) { left: 41%; }
+.tree:nth-child(26) { left: 77%; }
+.tree:nth-child(27) { left: 17%; }
+.tree:nth-child(28) { left: 53%; }
+.tree:nth-child(29) { left: 89%; }
+.tree:nth-child(30) { left: 35%; }
+
+/* Ground */
+.ground-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  transition: filter 0.5s ease;
+}
+
+.ground-back {
+  height: 60px;
+  background: repeating-linear-gradient(90deg, var(--ground-dark) 0px, var(--ground-dark) 8px, var(--ground-light) 8px, var(--ground-light) 16px);
+  background-size: 16px 60px;
+  image-rendering: pixelated;
+}
+
+.ground-front {
+  height: 40px;
+  background: repeating-linear-gradient(90deg, var(--ground-light) 0px, var(--ground-light) 6px, var(--ground-grass) 6px, var(--ground-grass) 12px, var(--tree-bright) 12px, var(--tree-bright) 16px);
+  background-size: 16px 40px;
+  image-rendering: pixelated;
+  border-top: 4px solid var(--tree-light);
+}
+
+/* ============================================
+   SMOKE
+   ============================================ */
+.smoke {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  z-index: 15;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.4;
+}
+
+.smoke-particle {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  filter: blur(8px);
+  animation: smokeFloat 8s ease-in-out infinite;
+}
+
+@keyframes smokeFloat {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  25% { transform: translateY(-50px) translateX(20px) scale(1.2); opacity: 0.3; }
+  50% { transform: translateY(-100px) translateX(-10px) scale(1.5); opacity: 0.2; }
+  75% { transform: translateY(-150px) translateX(30px) scale(1.8); opacity: 0.1; }
+}
+
+/* ============================================
+   APP CONTAINER (z-index 10, transparent bg)
+   ============================================ */
+.app {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: 100dvh;
+  background: transparent;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  padding: 16px;
+  overflow-y: auto;
+  padding-bottom: 100px;
+}
+
+.page.active { display: flex; }
+
+.page-content {
+  background: var(--day-card);
+  border: 3px solid var(--day-border);
+  padding: 24px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.shake { animation: shake 0.4s ease-in-out; }
+
+@keyframes star-float {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-60px) rotate(180deg); opacity: 0; }
+}
+
+.star-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--day-accent);
+  pointer-events: none;
+  animation: star-float 1s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jungle-tree, .smoke-particle, .card-wrapper.flipped {
+    animation: none !important;
+    transition: none !important;
+  }
+}
