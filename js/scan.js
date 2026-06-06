@@ -58,7 +58,7 @@ function mapTMClass(className) {
 }
 
 async function performScan() {
-  if (state.scansUsed >= state.scansMax) {
+  if (!state.isPro && state.scansUsed >= state.scansMax) {
     showFreemium();
     return;
   }
@@ -90,6 +90,8 @@ async function performScan() {
   state.justRevealed = species || null;
   state.lastConfidence = confidence;
   state.scansUsed++;
+  saveState();
+  updateProUI();
   btn.disabled = false;
 
   stopCamera();
@@ -102,7 +104,7 @@ async function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  if (state.scansUsed >= state.scansMax) {
+  if (!state.isPro && state.scansUsed >= state.scansMax) {
     showFreemium();
     return;
   }
@@ -132,6 +134,8 @@ async function handleFileUpload(event) {
     state.justRevealed = species || null;
     state.lastConfidence = confidence;
     state.scansUsed++;
+    saveState();
+    updateProUI();
     btn.disabled = false;
     document.getElementById('model-loading').style.display = 'none';
 

@@ -33,5 +33,20 @@ let state = {
   collection: ['meranti', 'keruing', 'rubber'],
   currentFilter: 'all',
   justRevealed: null,
-  isDark: false
+  isDark: false,
+  isPro: false
 };
+
+// Load saved state from localStorage
+const savedState = localStorage.getItem('wilddex-state');
+if (savedState) {
+  try {
+    const parsed = JSON.parse(savedState);
+    state.isPro = parsed.isPro || false;
+    state.scansUsed = parsed.scansUsed || 0;
+    state.collection = parsed.collection || state.collection;
+    state.isDark = parsed.isDark || false;
+  } catch (e) {
+    console.error('Failed to load saved state', e);
+  }
+}

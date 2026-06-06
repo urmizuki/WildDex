@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/pages.css">
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="js/data.js" defer></script>
   <script src="js/app.js" defer></script>
   <script src="js/ui.js" defer></script>
@@ -183,6 +184,16 @@
             <span id="collection-count">3</span> / 10
           </div>
         </div>
+        <div class="collection-export-bar" id="collection-export-bar">
+          <button class="pixel-btn export-btn" id="export-pdf-btn" onclick="exportCollectionToPDF()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Export PDF
+          </button>
+          <button class="pixel-btn export-btn export-btn-locked" id="export-pdf-locked" onclick="showFreemium()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Export PDF
+          </button>
+        </div>
         <div class="collection-filters">
           <button class="filter-btn active" data-filter="all" onclick="filterCollection('all')">All</button>
           <button class="filter-btn" data-filter="owned" onclick="filterCollection('owned')">Owned</button>
@@ -216,6 +227,205 @@
       </div>
     </section>
 
+    <!-- PROFILE -->
+    <section id="page-profile" class="page">
+      <div class="page-content profile-page">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <svg viewBox="0 0 64 64" width="64" height="64" class="pixelated">
+              <rect x="24" y="12" width="16" height="16" fill="#D4AF37" rx="2"/>
+              <rect x="28" y="14" width="4" height="4" fill="#1A1A1A"/>
+              <rect x="36" y="14" width="4" height="4" fill="#1A1A1A"/>
+              <rect x="28" y="22" width="8" height="2" fill="#1A1A1A"/>
+              <rect x="20" y="28" width="24" height="24" fill="#2D6A4F" rx="2"/>
+              <rect x="24" y="32" width="16" height="4" fill="#D4AF37"/>
+              <rect x="22" y="40" width="4" height="8" fill="#1A1A1A"/>
+              <rect x="38" y="40" width="4" height="8" fill="#1A1A1A"/>
+              <rect x="28" y="40" width="8" height="4" fill="#D4AF37"/>
+            </svg>
+          </div>
+          <div class="profile-name">Explorer #001</div>
+          <div class="profile-rank">Jungle Ranger</div>
+        </div>
+
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <div class="profile-stat-value" id="profile-cards">0</div>
+            <div class="profile-stat-label">Cards</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-value" id="profile-scans">0</div>
+            <div class="profile-stat-label">Scans</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-value" id="profile-rarest">-</div>
+            <div class="profile-stat-label">Rarest</div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <div class="section-title">Collection Progress</div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" id="profile-progress" style="width: 0%"></div>
+            </div>
+            <div class="progress-text">
+              <span id="profile-progress-count">0</span> / 10 species collected
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <div class="section-title">Achievements</div>
+          <div class="badges-grid">
+            <div class="badge" id="badge-first">
+              <div class="badge-icon">
+                <svg viewBox="0 0 32 32" width="32" height="32">
+                  <rect x="14" y="4" width="4" height="8" fill="#D4AF37"/>
+                  <rect x="12" y="12" width="8" height="8" fill="#D4AF37"/>
+                  <rect x="14" y="20" width="4" height="8" fill="#D4AF37"/>
+                </svg>
+              </div>
+              <div class="badge-name">First Scan</div>
+              <div class="badge-desc">Scan your first tree</div>
+            </div>
+            <div class="badge" id="badge-rare">
+              <div class="badge-icon">
+                <svg viewBox="0 0 32 32" width="32" height="32">
+                  <rect x="12" y="4" width="8" height="6" fill="#D4AF37"/>
+                  <rect x="10" y="10" width="12" height="6" fill="#D4AF37"/>
+                  <rect x="12" y="16" width="8" height="6" fill="#D4AF37"/>
+                  <rect x="14" y="22" width="4" height="6" fill="#D4AF37"/>
+                </svg>
+              </div>
+              <div class="badge-name">Rare Finder</div>
+              <div class="badge-desc">Find a rare card</div>
+            </div>
+            <div class="badge" id="badge-full">
+              <div class="badge-icon">
+                <svg viewBox="0 0 32 32" width="32" height="32">
+                  <rect x="8" y="8" width="16" height="16" fill="#D4AF37" rx="2"/>
+                  <rect x="12" y="14" width="8" height="4" fill="#1A1A1A"/>
+                  <rect x="14" y="12" width="4" height="8" fill="#1A1A1A"/>
+                </svg>
+              </div>
+              <div class="badge-name">Full Collector</div>
+              <div class="badge-desc">Collect all 10 species</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUBSCRIPTION -->
+    <section id="page-subscription" class="page">
+      <div class="page-content subscription-page">
+        <div class="subscription-header">
+          <div class="section-title">Choose Your Plan</div>
+          <div class="subscription-subtitle">Unlock the full jungle experience</div>
+        </div>
+
+        <div class="plan-card plan-free">
+          <div class="plan-header">
+            <div class="plan-name">Free</div>
+            <div class="plan-price">RM0</div>
+          </div>
+          <div class="plan-features">
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>5 scans per day</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Common cards only</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>20 collection slots</span>
+            </div>
+            <div class="plan-feature plan-feature-disabled">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <span>Export to PDF</span>
+            </div>
+            <div class="plan-feature plan-feature-disabled">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <span>Email support</span>
+            </div>
+          </div>
+          <button class="pixel-btn plan-btn plan-btn-current" disabled>Current Plan</button>
+        </div>
+
+        <div class="plan-card plan-pro">
+          <div class="plan-badge-popular">Most Popular</div>
+          <div class="plan-header">
+            <div class="plan-name">Pro</div>
+            <div class="plan-price">RM9.90<span class="plan-period">/bulan</span></div>
+          </div>
+          <div class="plan-features">
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Unlimited scans</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>All rarity cards</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Unlimited slots</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Export to PDF</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Email support</span>
+            </div>
+          </div>
+          <button class="pixel-btn plan-btn" onclick="upgradeToProDemo()">Upgrade Now</button>
+        </div>
+
+        <div class="plan-card plan-enterprise">
+          <div class="plan-header">
+            <div class="plan-name">Enterprise</div>
+            <div class="plan-price">Custom</div>
+          </div>
+          <div class="plan-features">
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Everything in Pro</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Custom species</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>CSV + API access</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Analytics dashboard</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Team accounts</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>White-label option</span>
+            </div>
+            <div class="plan-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Dedicated support</span>
+            </div>
+          </div>
+          <button class="pixel-btn plan-btn plan-btn-enterprise" onclick="alert('Hubungi kami di wilddex@email.com')">Hubungi Kami</button>
+        </div>
+      </div>
+    </section>
+
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
       <button class="nav-item active" onclick="goHome()">
@@ -230,6 +440,14 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         Cards
       </button>
+      <button class="nav-item" onclick="goProfile()">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20 C4 15 8 13 12 13 C16 13 20 15 20 20"/></svg>
+        Profile
+      </button>
+      <button class="nav-item" id="nav-pro" onclick="goSubscription()">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg>
+        <span class="nav-pro-label">Pro</span>
+      </button>
     </nav>
   </div>
 
@@ -241,7 +459,7 @@
       <div class="modal-text">You've used all <strong>5 free scans</strong> today.</div>
       <div class="modal-highlight">Upgrade to WildDex Pro for unlimited scans!</div>
       <div class="modal-actions">
-        <button class="pixel-btn" style="background: var(--day-accent); border-color: var(--day-accent);" onclick="alert('Payment flow')">Upgrade $2.99/mo</button>
+        <button class="pixel-btn" style="background: var(--day-accent); border-color: var(--day-accent);" onclick="upgradeToProDemo()">Upgrade to Pro</button>
         <button class="pixel-btn pixel-btn-secondary" onclick="closeFreemium(); goHome();">Back to Home</button>
       </div>
     </div>

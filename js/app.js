@@ -3,6 +3,52 @@
 function toggleTheme() {
   state.isDark = !state.isDark;
   document.body.setAttribute('data-theme', state.isDark ? 'night' : 'day');
+  saveState();
+}
+
+function saveState() {
+  const data = {
+    isPro: state.isPro,
+    scansUsed: state.scansUsed,
+    collection: state.collection,
+    isDark: state.isDark
+  };
+  localStorage.setItem('wilddex-state', JSON.stringify(data));
+}
+
+function upgradeToProDemo() {
+  state.isPro = true;
+  saveState();
+  updateProUI();
+  closeFreemium();
+  alert('Welcome to WildDex Pro! All features unlocked.');
+}
+
+function updateProUI() {
+  // Update nav Pro item
+  const navPro = document.getElementById('nav-pro');
+  if (navPro && state.isPro) {
+    navPro.classList.add('nav-pro');
+    const label = navPro.querySelector('.nav-pro-label');
+    if (label && !label.querySelector('.nav-pro-star')) {
+      label.innerHTML = 'Pro <span class="nav-pro-star">⭐</span>';
+    }
+  }
+  // Update scan counter
+  const scanCounters = document.querySelectorAll('.scan-counter-value');
+  scanCounters.forEach(el => {
+    if (state.isPro) {
+      el.textContent = 'PRO \u221E';
+      el.style.color = 'var(--day-accent)';
+    } else {
+      el.textContent = state.scansUsed + ' / ' + state.scansMax;
+      el.style.color = '';
+    }
+  });
+  // Re-render collection if on that page
+  if (document.getElementById('page-collection').classList.contains('active')) {
+    renderCollection();
+  }
 }
 
 function showPage(pageId) {
@@ -19,6 +65,8 @@ function showPage(pageId) {
   if (pageId === 'home') navItems[0].classList.add('active');
   if (pageId === 'scan') navItems[1].classList.add('active');
   if (pageId === 'collection') navItems[2].classList.add('active');
+  if (pageId === 'profile') navItems[3].classList.add('active');
+  if (pageId === 'subscription') navItems[4].classList.add('active');
 }
 
 function goHome() {
@@ -29,7 +77,7 @@ function goHome() {
 }
 
 function goScan() {
-  if (state.scansUsed >= state.scansMax) {
+  if (!state.isPro && state.scansUsed >= state.scansMax) {
     showFreemium();
     return;
   }
@@ -50,9 +98,29 @@ function goReveal() {
   showPage('reveal');
 }
 
+function goProfile() {
+  document.getElementById('page-reveal').classList.add('hidden');
+  stopCamera();
+  showPage('profile');
+  renderProfile();
+}
+
+function goSubscription() {
+  document.getElementById('page-reveal').classList.add('hidden');
+  stopCamera();
+  showPage('subscription');
+}
+
 // Home
 function renderHome() {
-  document.getElementById('scan-counter').textContent = state.scansUsed + ' / ' + state.scansMax;
+  const counterEl = document.getElementById('scan-counter');
+  if (state.isPro) {
+    counterEl.textContent = 'PRO \u221E';
+    counterEl.style.color = 'var(--day-accent)';
+  } else {
+    counterEl.textContent = state.scansUsed + ' / ' + state.scansMax;
+    counterEl.style.color = '';
+  }
   const recentEl = document.getElementById('recent-finds');
   recentEl.innerHTML = '';
   const recent = [...state.collection].reverse().slice(0, 5);
@@ -86,6 +154,10 @@ document.addEventListener('keydown', (e) => {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
+  if (state.isDark) {
+    document.body.setAttribute('data-theme', 'night');
+  }
+  updateProUI();
   renderHome();
   document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', (e) => {

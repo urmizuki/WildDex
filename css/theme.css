@@ -197,6 +197,134 @@ body[data-theme="night"] .reveal-page {
   background: rgba(15, 23, 42, 0.95);
 }
 
+body[data-theme="night"] .profile-avatar {
+  background: var(--night-bg);
+  border-color: var(--night-accent);
+}
+
+body[data-theme="night"] .profile-name {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .profile-rank {
+  color: var(--night-accent);
+}
+
+body[data-theme="night"] .profile-stats {
+  background: var(--night-bg);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .profile-stat-value {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .profile-stat-label {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .progress-bar {
+  background: var(--night-bg);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .progress-fill {
+  background: var(--night-primary);
+}
+
+body[data-theme="night"] .progress-text {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .badge {
+  background: var(--night-bg);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .badge.unlocked {
+  border-color: var(--night-accent);
+  background: rgba(184, 134, 11, 0.15);
+}
+
+body[data-theme="night"] .badge-name {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .badge-desc {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .plan-card {
+  background: var(--night-card);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .plan-name {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .plan-price {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .plan-period {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .plan-feature {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .plan-feature svg {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .plan-feature-disabled {
+  color: var(--night-muted);
+  opacity: 0.5;
+}
+
+body[data-theme="night"] .plan-feature-disabled svg {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .plan-btn-current {
+  background: var(--night-bg);
+  border-color: var(--night-border);
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .plan-pro {
+  border-color: var(--night-accent);
+}
+
+body[data-theme="night"] .plan-enterprise {
+  background: #0F172A;
+  border-color: #334155;
+}
+
+body[data-theme="night"] .plan-enterprise .plan-name {
+  color: var(--night-accent);
+}
+
+body[data-theme="night"] .plan-enterprise .plan-price {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .plan-enterprise .plan-feature {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .plan-enterprise .plan-feature svg {
+  color: var(--night-accent);
+}
+
+body[data-theme="night"] .plan-btn-enterprise {
+  background: var(--night-accent);
+  border-color: var(--night-accent);
+  color: var(--night-bg);
+}
+
 body[data-theme="night"] .card-rarity-badge.common {
   color: var(--rarity-common);
   border-color: var(--rarity-common);
@@ -225,6 +353,40 @@ body[data-theme="night"] .collection-card-rarity.common { color: var(--rarity-co
 body[data-theme="night"] .collection-card-rarity.uncommon { color: var(--rarity-uncommon); }
 body[data-theme="night"] .collection-card-rarity.rare { color: var(--rarity-rare); }
 body[data-theme="night"] .collection-card-rarity.legendary { color: var(--rarity-legendary); }
+
+/* Pro features night mode */
+body[data-theme="night"] .nav-pro {
+  color: var(--night-accent) !important;
+}
+
+body[data-theme="night"] .export-btn {
+  background: var(--night-accent);
+  border-color: var(--night-accent);
+  color: var(--night-bg);
+}
+
+body[data-theme="night"] .export-btn-locked {
+  background: var(--night-bg);
+  border-color: var(--night-border);
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .collection-card.holo {
+  animation: holo-shimmer 3s linear infinite;
+}
+
+body[data-theme="night"] .collection-card.locked {
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .lock-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--night-accent);
+}
+
+body[data-theme="night"] .lock-text {
+  color: var(--night-accent);
+}
 
 /* Home page only - transparent for jungle view */
 #page-home .page-content {

@@ -211,6 +211,7 @@ function saveAndGoHome() {
   const species = state.justRevealed;
   if (species && !state.collection.includes(species.id)) {
     state.collection.push(species.id);
+    saveState();
   }
   state.justRevealed = null;
   goHome();
