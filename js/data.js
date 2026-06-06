@@ -34,7 +34,8 @@ let state = {
   currentFilter: 'all',
   justRevealed: null,
   isDark: false,
-  isPro: false
+  isPro: false,
+  introMode: 'jungle' // 'jungle' or 'scanner'
 };
 
 // Load saved state from localStorage
@@ -46,6 +47,7 @@ if (savedState) {
     if (typeof parsed.scansUsed === 'number') state.scansUsed = parsed.scansUsed;
     state.collection = Array.isArray(parsed.collection) && parsed.collection.length > 0 ? parsed.collection : state.collection;
     state.isDark = parsed.isDark === true;
+    if (parsed.introMode) state.introMode = parsed.introMode;
   } catch (e) {
     console.error('Failed to load saved state', e);
   }
