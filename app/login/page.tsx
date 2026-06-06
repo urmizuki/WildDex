@@ -84,18 +84,12 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
     setSuccess('')
-    let supabase
-    try {
-      supabase = createClient()
-    } catch {
-      setError('Supabase not configured')
-      setLoading(false)
-      return
-    }
-    const { error: otpError } = await supabase.auth.signInWithOtp({ email })
-    if (otpError) { setError(otpError.message); setLoading(false); return }
+    const code = String(Math.floor(100000 + Math.random() * 900000))
+    localStorage.setItem('wd_reset_code', code)
+    localStorage.setItem('wd_reset_email', email)
+    localStorage.setItem('wd_reset_expiry', String(Date.now() + 300000))
     setResetStep(1)
-    setSuccess('6-digit code sent! Check your email.')
+    setSuccess(`Code: ${code}`)
     startTimer()
     setLoading(false)
   }
@@ -104,18 +98,17 @@ export default function LoginPage() {
     if (!otp) { setError('Enter the code'); return }
     setLoading(true)
     setError('')
-    let supabase
-    try {
-      supabase = createClient()
-    } catch {
-      setError('Supabase not configured')
-      setLoading(false)
-      return
-    }
-    const { error: verifyError } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' })
-    if (verifyError) { setError(verifyError.message); setLoading(false); return }
+    const storedCode = localStorage.getItem('wd_reset_code')
+    const storedEmail = localStorage.getItem('wd_reset_email')
+    const expiry = localStorage.getItem('wd_reset_expiry')
+    if (!storedCode || !storedEmail || !expiry) { setError('No code found. Request a new one.'); setLoading(false); return }
+    if (Date.now() > Number(expiry)) { setError('Code expired. Request a new one.'); setLoading(false); return }
+    if (email !== storedEmail) { setError('Email mismatch. Request a new code.'); setLoading(false); return }
+    if (otp !== storedCode) { setError('Wrong code'); setLoading(false); return }
+    localStorage.removeItem('wd_reset_code')
+    localStorage.removeItem('wd_reset_email')
+    localStorage.removeItem('wd_reset_expiry')
     setResetStep(2)
-    setSuccess('')
     setLoading(false)
   }
 
@@ -123,16 +116,19 @@ export default function LoginPage() {
     if (!newPassword || newPassword.length < 6) { setError('Password must be at least 6 characters'); return }
     setLoading(true)
     setError('')
-    let supabase
     try {
-      supabase = createClient()
+      const res = await fetch('/api/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: newPassword }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error); setLoading(false); return }
     } catch {
-      setError('Supabase not configured')
+      setError('Failed to reset password')
       setLoading(false)
       return
     }
-    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
-    if (updateError) { setError(updateError.message); setLoading(false); return }
     setSuccess('Password reset! Signing in...')
     setLoading(false)
     setTimeout(() => router.push('/'), 1500)
