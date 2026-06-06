@@ -86,10 +86,11 @@ function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: ()
     <div style={{ width: '100%', height: '100dvh', position: 'relative', background: '#0a0f0a', overflow: 'hidden' }}>
       {/* Auth bar */}
       <div style={{
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
+        height: '30px',
         zIndex: 9999,
         display: 'flex',
         justifyContent: 'flex-end',
@@ -101,13 +102,12 @@ function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: ()
         fontFamily: 'VT323, monospace',
         fontSize: '16px',
         color: '#86EFAC',
-        borderBottom: '1px solid rgba(74, 222, 128, 0.15)',
       }}>
-        <span>{userEmail}</span>
+        <span style={{ fontSize: '14px' }}>{userEmail}</span>
         <button onClick={onSignOut} style={{
           background: 'none', border: '1px solid #4ADE80', color: '#4ADE80',
-          borderRadius: '4px', padding: '2px 10px', cursor: 'pointer',
-          fontFamily: 'VT323, monospace', fontSize: '16px',
+          borderRadius: '4px', padding: '1px 8px', cursor: 'pointer',
+          fontFamily: 'VT323, monospace', fontSize: '14px',
         }}>
           Sign Out
         </button>
@@ -127,10 +127,11 @@ function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: ()
           setIframeLoaded(true)
         }}
         style={{
+          position: 'absolute',
+          top: '30px',
           width: '100%',
-          height: '100%',
+          height: 'calc(100% - 30px)',
           border: 'none',
-          marginTop: '30px',
         }}
         title="WildDex"
       />
