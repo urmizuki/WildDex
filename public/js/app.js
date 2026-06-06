@@ -7,6 +7,7 @@ function toggleTheme() {
 }
 
 function saveState() {
+  const key = WILDEX_USER ? `wilddex-state-${WILDEX_USER}` : 'wilddex-state';
   const data = {
     isPro: state.isPro,
     scansUsed: state.scansUsed,
@@ -15,7 +16,7 @@ function saveState() {
     introMode: state.introMode,
     _user: WILDEX_USER || null
   };
-  localStorage.setItem('wilddex-state', JSON.stringify(data));
+  localStorage.setItem(key, JSON.stringify(data));
 }
 
 function upgradeToProDemo() {

@@ -36,14 +36,21 @@ const WILDEX_USER = (() => {
   } catch { return null; }
 })();
 
-// Clear stale localStorage when user is authenticated (fresh login)
+function getStorageKey() {
+  return WILDEX_USER ? `wilddex-state-${WILDEX_USER}` : 'wilddex-state';
+}
+
+// Migrate old shared key to per-user key
 if (WILDEX_USER) {
-  const saved = localStorage.getItem('wilddex-state');
-  if (saved) {
+  const oldSaved = localStorage.getItem('wilddex-state');
+  if (oldSaved) {
     try {
-      const parsed = JSON.parse(saved);
-      // If no user prev stored or mismatch, reset for auth session
-      if (parsed._user && parsed._user !== WILDEX_USER) {
+      const parsed = JSON.parse(oldSaved);
+      if (parsed._user === WILDEX_USER) {
+        const newKey = getStorageKey();
+        if (!localStorage.getItem(newKey)) {
+          localStorage.setItem(newKey, oldSaved);
+        }
         localStorage.removeItem('wilddex-state');
       }
     } catch {
@@ -64,7 +71,7 @@ let state = {
 };
 
 // Load saved state from localStorage
-const savedState = localStorage.getItem('wilddex-state');
+const savedState = localStorage.getItem(getStorageKey());
 if (savedState) {
   try {
     const parsed = JSON.parse(savedState);
