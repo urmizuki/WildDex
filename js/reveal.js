@@ -14,7 +14,7 @@ function setupReveal(species, confidence) {
   newBadge.classList.add('hidden');
   
   if (!species) {
-    // Not recognized
+    // Not recognised
     const confPct = Math.round((confidence || 0) * 100);
     revealed.innerHTML = `
       <div class="card-image-area">
@@ -28,7 +28,7 @@ function setupReveal(species, confidence) {
         </svg>
       </div>
       <div class="card-info">
-        <div class="card-name">Not Recognized</div>
+        <div class="card-name">Not Recognised</div>
         <div class="card-species">Confidence: ${confPct}%</div>
         <div style="font-size: 18px; color: var(--day-muted); line-height: 1.4; margin-top: 8px;">
           The AI could not identify this tree. Try again with a clearer photo!
