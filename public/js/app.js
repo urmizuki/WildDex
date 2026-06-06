@@ -12,7 +12,8 @@ function saveState() {
     scansUsed: state.scansUsed,
     collection: state.collection,
     isDark: state.isDark,
-    introMode: state.introMode
+    introMode: state.introMode,
+    _user: WILDEX_USER || null
   };
   localStorage.setItem('wilddex-state', JSON.stringify(data));
 }
@@ -330,6 +331,10 @@ function setIntroMode(mode) {
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
+  if (!WILDEX_USER) {
+    window.location.href = '/login';
+    return;
+  }
   if (state.isDark) {
     document.body.setAttribute('data-theme', 'night');
   }

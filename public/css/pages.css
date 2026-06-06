@@ -390,6 +390,13 @@
   line-height: 1.4;
 }
 
+.profile-email {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--day-accent);
+  opacity: 0.8;
+}
+
 .profile-rank {
   font-family: var(--font-body);
   font-size: 20px;

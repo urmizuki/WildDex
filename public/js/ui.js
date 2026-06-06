@@ -59,6 +59,12 @@ function renderProfile() {
   const totalCards = state.collection.length;
   const totalScans = state.scansUsed;
   
+  // Show user email
+  const emailEl = document.getElementById('profile-email');
+  if (emailEl && WILDEX_USER) {
+    emailEl.textContent = WILDEX_USER;
+  }
+  
   // Find rarest card
   const rarityOrder = { 'common': 1, 'uncommon': 2, 'rare': 3, 'legendary': 4 };
   let rarest = null;

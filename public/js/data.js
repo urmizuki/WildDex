@@ -27,15 +27,40 @@ const SPECIES = [
   { id: 'banyan', name: 'Banyan', species: 'Ficus benghalensis', rarity: 'legendary', conservation: 'Least Concern', height: '30m', age: '500 yrs', description: 'Sacred fig tree with massive aerial roots that become secondary trunks. Can spread over hectares. Also known as the Walking Tree.', pixels: [{x:10,y:12,w:12,h:16,c:'#4A3728'},{x:9,y:14,w:1,h:12,c:'#3D2B1F'},{x:22,y:16,w:1,h:10,c:'#3D2B1F'},{x:12,y:14,w:2,h:10,c:'#5C4033'},{x:16,y:16,w:2,h:8,c:'#5C4033'},{x:14,y:18,w:4,h:2,c:'#3D2B1F'},{x:8,y:8,w:16,h:4,c:'#1B4332'},{x:10,y:6,w:12,h:2,c:'#2D6A4F'},{x:12,y:4,w:8,h:2,c:'#40916C'},{x:14,y:2,w:4,h:2,c:'#52B788'},{x:6,y:10,w:2,h:4,c:'#86EFAC'},{x:24,y:10,w:2,h:4,c:'#86EFAC'}] }
 ];
 
+// Auth - extract user email from URL hash (set by Next.js wrapper)
+const WILDEX_USER = (() => {
+  try {
+    const hash = window.location.hash;
+    const match = hash.match(/user=([^&]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  } catch { return null; }
+})();
+
+// Clear stale localStorage when user is authenticated (fresh login)
+if (WILDEX_USER) {
+  const saved = localStorage.getItem('wilddex-state');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      // If no user prev stored or mismatch, reset for auth session
+      if (!parsed._user || parsed._user !== WILDEX_USER) {
+        localStorage.removeItem('wilddex-state');
+      }
+    } catch {
+      localStorage.removeItem('wilddex-state');
+    }
+  }
+}
+
 let state = {
-  scansUsed: 3,
+  scansUsed: 0,
   scansMax: 5,
-  collection: ['meranti', 'keruing', 'rubber'],
+  collection: [],
   currentFilter: 'all',
   justRevealed: null,
   isDark: false,
   isPro: false,
-  introMode: 'jungle' // 'jungle' or 'scanner'
+  introMode: 'jungle'
 };
 
 // Load saved state from localStorage

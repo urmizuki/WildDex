@@ -58,6 +58,11 @@ function mapTMClass(className) {
 }
 
 async function performScan() {
+  if (!WILDEX_USER) {
+    window.location.href = '/login';
+    return;
+  }
+
   if (!state.isPro && state.scansUsed >= state.scansMax) {
     showFreemium();
     return;
@@ -108,6 +113,11 @@ async function performScan() {
 async function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
+
+  if (!WILDEX_USER) {
+    window.location.href = '/login';
+    return;
+  }
 
   if (!state.isPro && state.scansUsed >= state.scansMax) {
     showFreemium();
