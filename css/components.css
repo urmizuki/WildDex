@@ -310,6 +310,41 @@
   50% { box-shadow: 0 0 24px rgba(184, 134, 11, 0.5); }
 }
 
+/* Conservation badge (reveal + detail) */
+.card-conservation-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 6px;
+  font-family: var(--font-heading);
+  font-size: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1.5px solid;
+  background: rgba(255,255,255,0.92);
+  z-index: 2;
+  white-space: nowrap;
+}
+.card-conservation-badge.Critically-Endangered { color: #DC2626; border-color: #DC2626; box-shadow: 0 0 8px rgba(220,38,38,0.25); }
+.card-conservation-badge.Endangered { color: #EA580C; border-color: #EA580C; }
+.card-conservation-badge.Vulnerable { color: #CA8A04; border-color: #CA8A04; }
+.card-conservation-badge.Near-Threatened { color: #2563EB; border-color: #2563EB; }
+.card-conservation-badge.Least-Concern { color: #16A34A; border-color: #16A34A; }
+
+/* Conservation badge (collection cards) */
+.collection-card-conservation {
+  font-family: var(--font-heading);
+  font-size: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 2px 0;
+}
+.collection-card-conservation.Critically-Endangered { color: #DC2626; }
+.collection-card-conservation.Endangered { color: #EA580C; }
+.collection-card-conservation.Vulnerable { color: #CA8A04; }
+.collection-card-conservation.Near-Threatened { color: #2563EB; }
+.collection-card-conservation.Least-Concern { color: #16A34A; }
+
 .card-info {
   padding: 12px;
   display: flex;

@@ -78,6 +78,7 @@ function setupReveal(species, confidence) {
     <div class="card-image-area">
       ${legendaryOverlay}
       <div class="card-rarity-badge ${species.rarity}">${species.rarity}</div>
+      <div class="card-conservation-badge ${species.conservation.replace(' ', '-')}">⚠ ${species.conservation}</div>
       <svg viewBox="0 0 32 32" width="100%" height="100%" class="pixelated" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated;">
         ${species.pixels.map(p => `<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="${p.c}"/>`).join('')}
       </svg>

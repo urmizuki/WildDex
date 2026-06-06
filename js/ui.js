@@ -13,6 +13,7 @@ function showDetail(species) {
             <div class="card-face card-back" style="position: absolute;">
               <div class="card-image-area" style="height: 55%;">
                 <div class="card-rarity-badge ${species.rarity}">${species.rarity}</div>
+                <div class="card-conservation-badge ${species.conservation.replace(' ', '-')}" style="position: absolute; top: 8px; left: 8px;">⚠ ${species.conservation}</div>
                 <svg viewBox="0 0 32 32" width="100%" height="100%" class="pixelated" style="image-rendering: pixelated;">
                   ${species.pixels.map(p => `<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="${p.c}"/>`).join('')}
                 </svg>

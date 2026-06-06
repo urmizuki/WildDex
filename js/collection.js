@@ -54,6 +54,7 @@ function renderCollection() {
         <div class="collection-card-info">
           <div class="collection-card-name">${species.name}</div>
           <div class="collection-card-rarity ${species.rarity}">${species.rarity}</div>
+          <div class="collection-card-conservation ${species.conservation.replace(' ', '-')}">⚠ ${species.conservation}</div>
         </div>
       `;
     } else {
@@ -66,6 +67,7 @@ function renderCollection() {
         <div class="collection-card-info">
           <div class="collection-card-name">${species.name}</div>
           <div class="collection-card-rarity ${species.rarity}">${species.rarity}</div>
+          <div class="collection-card-conservation ${species.conservation.replace(' ', '-')}">⚠ ${species.conservation}</div>
           ${isOwned ? `<div class="collection-card-stat">${species.height} &middot; ${species.age}</div>` : ''}
         </div>
       `;
