@@ -9,7 +9,8 @@ function setupReveal(species, confidence) {
   
   // Reset animations
   wrapper.className = 'card-wrapper';
-  revealPage.classList.remove('shake-screen', 'flash-rare', 'flash-legendary');
+  revealPage.classList.remove('shake-screen', 'flash-rare', 'flash-legendary', 'legendary-summon-mode');
+  revealed.classList.remove('glow-rare', 'glow-legendary');
   actions.style.opacity = '0';
   newBadge.classList.add('hidden');
   
@@ -50,8 +51,8 @@ function setupReveal(species, confidence) {
   
   // Set flip animation class based on rarity + newness
   let flipClass = 'flip-common';
-  if (isNew) flipClass = 'flip-new';
-  else if (rarity === 'legendary') flipClass = 'flip-legendary';
+  if (rarity === 'legendary') flipClass = 'flip-card-summon';
+  else if (isNew) flipClass = 'flip-new';
   else if (rarity === 'rare') flipClass = 'flip-rare';
   else if (rarity === 'uncommon') flipClass = 'flip-uncommon';
   
@@ -66,11 +67,16 @@ function setupReveal(species, confidence) {
     revealPage.classList.add('shake-screen', 'flash-rare');
   }
   if (rarity === 'legendary') {
-    revealPage.classList.add('shake-screen', 'flash-legendary');
+    revealPage.classList.add('legendary-summon-mode');
   }
   
+  const legendaryOverlay = rarity === 'legendary'
+    ? '<div class="legendary-card-shimmer"></div><div class="legendary-card-aura"></div>'
+    : '';
+
   revealed.innerHTML = `
     <div class="card-image-area">
+      ${legendaryOverlay}
       <div class="card-rarity-badge ${species.rarity}">${species.rarity}</div>
       <svg viewBox="0 0 32 32" width="100%" height="100%" class="pixelated" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated;">
         ${species.pixels.map(p => `<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="${p.c}"/>`).join('')}
@@ -93,34 +99,39 @@ function setupReveal(species, confidence) {
   `;
   
   setTimeout(() => {
-    wrapper.classList.add('flipped');
-    
-    // Legendary gets a zoom pulse after flip
-    if (rarity === 'legendary') {
-      wrapper.classList.add('zoom-legendary');
-    }
-    
-    if (isNew) {
-      newBadge.classList.remove('hidden');
-      newBadge.classList.add('enhanced');
-    }
-    
-    setTimeout(() => {
+    const showPostRevealEffects = () => {
+      if (isNew) {
+        newBadge.classList.remove('hidden');
+        newBadge.classList.add('enhanced');
+      }
+
       actions.style.opacity = '1';
-      
+
       // Spawn particles based on rarity
       spawnRarityParticles(rarity, isNew);
-      
+
       // Spawn float text
       if (isNew) {
         spawnFloatText('NEW!', 'new');
       } else if (rarity === 'legendary') {
-        spawnFloatText('LEGENDARY!', 'legendary');
+        spawnFloatText('LEGENDARY CARD!', 'legendary');
       } else if (rarity === 'rare') {
         spawnFloatText('RARE!', 'rare');
       }
-      
-    }, 400);
+    };
+
+    if (rarity === 'legendary') {
+      wrapper.classList.add('summoning');
+      setTimeout(() => {
+        wrapper.classList.remove('summoning');
+        wrapper.classList.add('flipped', 'zoom-legendary');
+        showPostRevealEffects();
+      }, 1100);
+      return;
+    }
+
+    wrapper.classList.add('flipped');
+    setTimeout(showPostRevealEffects, 400);
   }, 600);
 }
 
