@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [configured, setConfigured] = useState(true)
   const router = useRouter()
@@ -31,6 +32,7 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess('')
 
     let supabase
     try {
@@ -55,12 +57,40 @@ export default function LoginPage() {
     }
 
     if (mode === 'signup') {
-      setError('Check your email to confirm your account!')
+      setSuccess('Signed up! Check your email to confirm.')
       setLoading(false)
       return
     }
 
     router.push('/')
+  }
+
+  async function handleForgotPassword() {
+    if (!email) {
+      setError('Enter your email first')
+      return
+    }
+    setLoading(true)
+    setError('')
+    setSuccess('')
+    let supabase
+    try {
+      supabase = createClient()
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Supabase not configured'
+      setError(msg)
+      setLoading(false)
+      return
+    }
+    const { error: forgotError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+    })
+    if (forgotError) {
+      setError(forgotError.message)
+    } else {
+      setSuccess('Password reset link sent!')
+    }
+    setLoading(false)
   }
 
   return (
@@ -103,10 +133,10 @@ export default function LoginPage() {
             <div style={{
               textAlign: 'center',
               padding: '24px',
-              fontFamily: "'Press Start 2P', cursive",
-              fontSize: '10px',
+              fontFamily: 'VT323, monospace',
+              fontSize: '20px',
               color: '#FBBF24',
-              lineHeight: 1.8,
+              lineHeight: 1.6,
             }}>
               <div style={{ fontSize: '32px', marginBottom: '16px' }}>⚙</div>
               Supabase not configured.<br/>
@@ -152,9 +182,23 @@ export default function LoginPage() {
                   outline: 'none',
                 }}
               />
+              {mode === 'login' && (
+                <button type="button" onClick={handleForgotPassword} style={{
+                  background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer',
+                  fontFamily: 'VT323, monospace', fontSize: '16px', textAlign: 'right',
+                  padding: '0', marginTop: '-8px', textDecoration: 'underline',
+                }}>
+                  Forgot password?
+                </button>
+              )}
               {error && (
-                <p style={{ color: error.includes('Check your email') ? '#4ADE80' : '#EF4444', fontSize: '18px', textAlign: 'center' }}>
+                <p style={{ color: '#EF4444', fontSize: '18px', textAlign: 'center' }}>
                   {error}
+                </p>
+              )}
+              {success && (
+                <p style={{ color: '#4ADE80', fontSize: '18px', textAlign: 'center' }}>
+                  {success}
                 </p>
               )}
               <button type="submit" disabled={loading} style={{
@@ -163,33 +207,33 @@ export default function LoginPage() {
                 color: '#0F172A',
                 border: 'none',
                 borderRadius: '8px',
-                fontFamily: "'Press Start 2P', cursive",
-                fontSize: '12px',
+                fontFamily: 'VT323, monospace',
+                fontSize: '22px',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.6 : 1,
-                textTransform: 'uppercase',
+                letterSpacing: '2px',
               }}>
-                {loading ? '...' : mode === 'login' ? 'Sign In' : 'Create Account'}
+                {loading ? '...' : mode === 'login' ? 'Sign In' : 'Sign Up'}
               </button>
             </form>
 
             <p style={{ textAlign: 'center', marginTop: '24px', color: '#94A3B8', fontSize: '18px' }}>
               {mode === 'login' ? (
                 <>No account?{' '}
-                  <button onClick={() => { setMode('signup'); setError('') }} style={{
+                  <button onClick={() => { setMode('signup'); setError(''); setSuccess('') }} style={{
                     background: 'none', border: 'none', color: '#4ADE80', cursor: 'pointer',
                     fontFamily: 'VT323, monospace', fontSize: '18px', textDecoration: 'underline',
                   }}>
-                    Sign up
+                    Sign Up
                   </button>
                 </>
               ) : (
                 <>Already have an account?{' '}
-                  <button onClick={() => { setMode('login'); setError('') }} style={{
+                  <button onClick={() => { setMode('login'); setError(''); setSuccess('') }} style={{
                     background: 'none', border: 'none', color: '#4ADE80', cursor: 'pointer',
                     fontFamily: 'VT323, monospace', fontSize: '18px', textDecoration: 'underline',
                   }}>
-                    Sign in
+                    Sign In
                   </button>
                 </>
               )}
