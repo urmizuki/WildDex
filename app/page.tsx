@@ -143,10 +143,16 @@ function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: ()
   const [searchParams, setSearchParams] = useState('')
 
   useEffect(() => {
-    setSearchParams(window.location.search)
+    const s = window.location.search;
+    setSearchParams(s);
+    // Clean unlock param from outer URL so iframe doesn't keep getting it
+    if (s.includes('unlock=max')) {
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+    }
   }, [])
 
-  const iframeSrc = `/index.html?v=7${searchParams}#user=${encodeURIComponent(userEmail)}`
+  const params = searchParams ? `&${searchParams.slice(1)}` : ''
+  const iframeSrc = `/index.html?v=7${params}#user=${encodeURIComponent(userEmail)}`
 
   return (
     <div style={{ width: '100%', height: '100dvh', position: 'relative', background: '#0a0f0a', overflow: 'hidden' }}>

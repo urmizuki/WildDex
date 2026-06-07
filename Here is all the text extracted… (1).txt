@@ -1,0 +1,132 @@
+Here is all the text extracted from the provided images, organized logically by their document sections:
+## Document Header / Interface Elements
+*(Visible at the top of several mobile screenshots, such as image_1.png, image_2.png, and image_8.png)*
+ * 7:39
+ * FORESTX HACKATHON...
+ * External
+## Objectives and Goals
+*(From image_7.png)*
+### OBJECTIVES AND GOALS
+ * To enhance sponsor brand visibility and recognition by showcasing organisational support for sustainability and technological innovation.
+ * To provide sponsors with access to future talent by connecting them with high-performing university students and potential future employees.
+ * To support corporate social responsibility (CSR) goals through contributions to environmental sustainability, youth development and digital innovation.
+ * To facilitate exposure to innovative ideas and emerging solutions addressing real-world forestry and environmental challenges.
+ * To strengthen strategic partnerships and networking opportunities with Universiti Putra Malaysia, academic experts and industry stakeholders.
+### THEME
+FORESTRY AND ENVIRONMENT
+## Problem Statement and Case Studies
+### CASE STUDY 1: DIGITALIZATION OF FOREST INVENTORY SMART-DBH
+*(From image_7.png and image_8.png)*
+ * **PROBLEM STATEMENT**
+   Traditional forest inventory relies heavily on manual labor where foresters use diameter tapes to measure the Diameter at Breast Height (DBH) of individual trees. This method is time-consuming, physically demanding and highly susceptible to human error during data recording in dense tropical terrains.
+ * **OBJECTIVE**
+   To develop a mobile-based solution capable of automating tree diameter measurements using Computer Vision or Augmented Reality (AR) technology.
+ * **TECHNICAL SCOPE**
+   * Utilizing smartphone camera sensors to detect and calculate object dimensions.
+   * Integrating forestry mensuration formulas to estimate timber volume based on captured data.
+   * Implementation of a cloud-based database for real-time digital record-keeping.
+### CASE STUDY 2: DIGITAL TIMBER TRACEABILITY CHAIN OF CUSTODY (LOG TRACE)
+*(From image_5.png and image_8.png)*
+ * **PROBLEM STATEMENT**
+   The global timber industry faces significant challenges in verifying the legal origin of wood products. Paper-based documentation systems are easily manipulated, making it difficult to distinguish between timber from certified concessions and illegally harvested logs, thus threatening forest certification standards.
+ * **OBJECTIVE**
+   To create a digital tracking system that assigns a unique digital identity to each harvested log, ensuring transparency from the felling site to the processing mill.
+ * **TECHNICAL SCOPE**
+   * Development of a centralized database for log registration and movement history.
+   * Implementation of QR Code or NFC/RFID tagging as a physical-to-digital bridge.
+   * A monitoring dashboard for forestry authorities to track the "Chain of Custody" in real-time.
+### CASE STUDY 3: SMART GEOFENCING FOR FOREST RESERVE SECURITY AND SAFETY
+*(From image_2.png)*
+ * **PROBLEM STATEMENT**
+   Education forest reserves (such as SISFEC) are often subject to unauthorized encroachment and safety risks involving lost hikers. Monitoring vast forested areas manually is inefficient, and delays in locating individuals during Search and Rescue (SAR) operations can be fatal.
+ * **OBJECTIVE**
+   To develop a digital permit and safety system equipped with Geofencing capabilities to monitor human presence within forest boundaries virtually.
+ * **TECHNICAL SCOPE**
+   * Integration of mobile GPS/GNSS tracking to monitor user coordinates.
+   * Automated "Push Notifications" or haptic alerts if a user enters restricted or high-risk zones.
+   * An emergency SOS trigger that transmits location data directly to the forest ranger's command center.
+### CASE STUDY 4: AI-DRIVEN SPECIES IDENTIFICATION (THE BIO-IDENTIFIER)
+*(From image_1.png and image_2.png)*
+ * **PROBLEM STATEMENT**
+   Accurate tree species identification in high-biodiversity tropical forests requires specialized expertise in dendrology and wood anatomy. The shortage of experts on-site often slows down biodiversity auditing, forest research, and the enforcement of logging regulations.
+ * **OBJECTIVE**
+   To build an Artificial Intelligence (AI) image classification model capable of identifying tree species based on bark textures or leaf morphology.
+ * **TECHNICAL SCOPE** *(Also visible in image_3.png and image_4.png)*
+   * Training a Machine Learning (ML) model using localized datasets of Malaysian timber species.
+   * Development of a "Point-and-Identify" mobile interface for field foresters and researchers.
+   * Creation of a digital library containing scientific names, conservation status, and ecological data for identified species.
+## Judging Criteria
+*(From image_1.png, image_3.png, and image_4.png)*
+### JUDGING CRITERIA
+| Criteria | Description | Weight (%) |
+|---|---|---|
+| Innovation & Creativity | Originality of the idea and its uniqueness in addressing forestry and environmental challenges. | 25% |
+| Problem-Solution Fit | Effectiveness of the proposed solution in addressing the selected case study and achieving its objectives. | 25% |
+| Technical Feasibility | Practicality, functionality, and technical implementation of the proposed system or prototype. | 20% |
+| Impact & Sustainability | Potential environmental, social, and economic benefits, including long-term applicability. | 15% |
+| Presentation & Communication | Clarity, professionalism, demonstration quality, and ability to explain the solution. | 15% |
+| **Total** |  | **100%** |
+### Additional Notes:
+*(Visible across image_3.png, image_4.png, and image_6.png)*
+ * Judges' decisions are final and cannot be appealed.
+ * Teams must clearly demonstrate how their solution addresses the selected case study.
+ * Bonus consideration may be given to solutions incorporating emerging technologies such as AI, IoT, AR/VR, GIS, Blockchain, or Cloud Computing.
+## Submission Details
+### Submission Platform
+*(From image_3.png, image_4.png, and image_6.png)*
+ * All submissions must be made through the official Google Form provided by the organizing committee.
+### Required Deliverables
+*(From image_6.png)*
+Each team is required to submit:
+ 1. **Project Report (PDF Format)**
+   * Maximum 10 pages.
+     **Must include:**
+   * Problem Statement
+   * Proposed Solution
+   * Methodology
+   * Technical Architecture
+   * Expected Outcomes
+   * References
+ 2. **Presentation Slides (PDF/PPTX Format)**
+   * Maximum 15 slides.
+ 3. **Prototype Demonstration Video**
+   * Duration: 3–5 minutes.
+   * Upload the video to Google Drive or YouTube (Unlisted).
+   * Include the shareable link in the Google Form.
+ 4. **Supporting Materials (Optional)**
+   * Source code repository (GitHub/GitLab).
+   * Additional documentation or design files. *(Partially cut off at top of image_0.png)*
+### Submission Procedure
+*(From image_0.png and image_6.png)*
+ 1. Upload all required files to Google Drive.
+ 2. Ensure sharing permissions are set to "Anyone with the link can view."
+ 3. Complete the official Google Form.
+ 4. Attach or provide all required links in the designated sections.
+ 5. Submit the form before the deadline.
+### File Naming Format
+*(From image_0.png)*
+TeamName_CaseStudyNumber_DocumentType
+**Example:**
+ * GreenTech_CS1_Report.pdf
+ * GreenTech_CS1_Slides.pdf
+### Important Notes
+*(From image_0.png)*
+ * Only one submission per team is required.
+ * Teams are responsible for ensuring that all uploaded files and links are accessible.
+ * Late submissions will not be accepted.
+ * Any form of plagiarism will result in immediate disqualification.
+ * The organizing committee reserves the right to verify the authenticity of all submitted materials.
+**Submission Link:**
+https://forms.gle/TWUYjYZv7r94Gtuy6
+**ALL THE BEST!**
+## Document Footer / Logo Banner
+*(From image_0.png)*
+ * UPM | UNIVERSITI PUTRA MALAYSIA | BERILMU BERBAKTI
+ * PUTRA | PERTANIAN UNTUK RAKYAT
+ * KPZ | KOLEJ PENDETA ZA'BA
+ * **FORESTX**
+## Page Markers
+ * 5 of 11 *(image_5.png)*
+ * 8 of 11 *(image_4.png)*
+ * 9 of 11 *(image_6.png)*
+ * 10 of 11 *(image_0.png)*

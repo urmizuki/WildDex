@@ -405,9 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // URL-triggered unlock: append ?unlock=max to URL for demo
+  // URL-triggered unlock: append ?unlock=max to URL for demo (one-shot)
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('unlock') === 'max') {
+  if (urlParams.get('unlock') === 'max' && state.collection.length < 10) {
     state.collection = ['meranti','keruing','rubber','jati','kulai','durian','cengal','tualang','rafflesia','banyan'];
     state.scansUsed = 999;
     state.scansMax = 9999;
