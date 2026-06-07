@@ -2,6 +2,32 @@
 
 let cameraStream = null;
 let isPredicting = false;
+let scanFlashSkip = false;
+
+function skipScanFlash() {
+  scanFlashSkip = true;
+}
+
+function waitForFlash(ms) {
+  return new Promise(resolve => {
+    const start = Date.now();
+    const timeout = setTimeout(() => {
+      scanFlashSkip = false;
+      resolve();
+    }, ms);
+    const check = setInterval(() => {
+      if (scanFlashSkip) {
+        clearTimeout(timeout);
+        clearInterval(check);
+        scanFlashSkip = false;
+        resolve();
+      }
+      if (Date.now() - start > ms + 100) {
+        clearInterval(check);
+      }
+    }, 50);
+  });
+}
 
 async function initCamera() {
   const video = document.getElementById('camera-video');
@@ -69,9 +95,33 @@ async function performScan() {
   }
 
   const btn = document.getElementById('scan-btn');
-  const loading = document.getElementById('model-loading');
+  const hud = document.getElementById('scan-hud');
+  const beam = document.getElementById('scan-hud-beam');
+  const dataLines = document.querySelectorAll('.scan-hud-data-line');
   btn.disabled = true;
-  loading.style.display = 'block';
+
+  // Show HUD overlay
+  if (hud) {
+    hud.style.display = 'block';
+    // Trigger reflow to restart animation
+    hud.style.animation = 'none';
+    void hud.offsetWidth;
+    hud.style.animation = '';
+  }
+  if (beam) {
+    beam.classList.add('active');
+  }
+
+  // Animate data readout lines sequentially
+  if (dataLines.length) {
+    dataLines[0].setAttribute('data-status', 'scanning');
+    setTimeout(() => {
+      if (dataLines[1]) dataLines[1].setAttribute('data-status', 'scanning');
+    }, 400);
+    setTimeout(() => {
+      if (dataLines[2]) dataLines[2].setAttribute('data-status', 'scanning');
+    }, 800);
+  }
 
   try {
     await loadTMModel();
@@ -79,8 +129,6 @@ async function performScan() {
   } catch (e) {
     console.log('Camera/Model init failed', e);
   }
-
-  loading.style.display = 'none';
 
   let predictedId = null;
   let confidence = 0;
@@ -100,10 +148,46 @@ async function performScan() {
   state.justRevealed = species || null;
   state.lastConfidence = confidence;
   state.scansUsed++;
+  state.expeditionScans++;
+  // Check expedition progression
+  const newTier = checkExpeditionUnlock();
+  if (newTier) {
+    showUnlockPopup(newTier);
+  }
   saveState();
   updateProUI();
-  btn.disabled = false;
 
+  // Update data lines with results
+  if (dataLines[0]) dataLines[0].textContent = 'BARK TEXTURE: CAPTURED';
+  if (dataLines[1]) dataLines[1].textContent = species ? 'LEAF MORPHOLOGY: MATCHED' : 'LEAF MORPHOLOGY: NO MATCH';
+  if (dataLines[2]) dataLines[2].textContent = species ? 'DBH ESTIMATE: ANALYZED' : 'DBH ESTIMATE: N/A';
+  if (dataLines[3]) {
+    dataLines[3].textContent = `CONFIDENCE: ${Math.round(confidence * 100)}%`;
+    dataLines[3].style.display = 'flex';
+  }
+
+  // Show species detected flash before reveal
+  if (species) {
+    const flash = document.getElementById('scan-detected-flash');
+    const detectedName = document.getElementById('scan-detected-name');
+    if (flash && detectedName) {
+      detectedName.textContent = species.name;
+      flash.classList.add('active');
+
+      // Wait for flash animation then transition (skippable)
+      await waitForFlash(1600);
+      flash.classList.remove('active');
+    }
+  } else {
+    // Brief pause for "not recognized" too
+    await waitForFlash(500);
+  }
+
+  // Hide HUD
+  if (hud) hud.style.display = 'none';
+  if (beam) beam.classList.remove('active');
+
+  btn.disabled = false;
   stopCamera();
   setupReveal(species, confidence);
   goReveal();
@@ -125,9 +209,25 @@ async function handleFileUpload(event) {
   }
 
   const btn = document.getElementById('scan-btn');
-  const loading = document.getElementById('model-loading');
+  const hud = document.getElementById('scan-hud');
+  const beam = document.getElementById('scan-hud-beam');
+  const dataLines = document.querySelectorAll('.scan-hud-data-line');
   btn.disabled = true;
-  loading.style.display = 'block';
+
+  // Show HUD for image scan too
+  if (hud) {
+    hud.style.display = 'block';
+    hud.style.animation = 'none';
+    void hud.offsetWidth;
+    hud.style.animation = '';
+  }
+  if (beam) beam.classList.add('active');
+
+  if (dataLines.length) {
+    dataLines[0].setAttribute('data-status', 'scanning');
+    setTimeout(() => { if (dataLines[1]) dataLines[1].setAttribute('data-status', 'scanning'); }, 400);
+    setTimeout(() => { if (dataLines[2]) dataLines[2].setAttribute('data-status', 'scanning'); }, 800);
+  }
 
   try {
     await loadTMModel();
@@ -154,16 +254,45 @@ async function handleFileUpload(event) {
     state.justRevealed = species || null;
     state.lastConfidence = confidence;
     state.scansUsed++;
+    state.expeditionScans++;
+    const newTier = checkExpeditionUnlock();
+    if (newTier) {
+      showUnlockPopup(newTier);
+    }
     saveState();
     updateProUI();
+
+    if (dataLines[0]) dataLines[0].textContent = 'BARK TEXTURE: CAPTURED';
+    if (dataLines[1]) dataLines[1].textContent = species ? 'LEAF MORPHOLOGY: MATCHED' : 'LEAF MORPHOLOGY: NO MATCH';
+    if (dataLines[2]) dataLines[2].textContent = species ? 'DBH ESTIMATE: ANALYZED' : 'DBH ESTIMATE: N/A';
+    if (dataLines[3]) {
+      dataLines[3].textContent = `CONFIDENCE: ${Math.round(confidence * 100)}%`;
+      dataLines[3].style.display = 'flex';
+    }
+
+    if (species) {
+      const flash = document.getElementById('scan-detected-flash');
+      const detectedName = document.getElementById('scan-detected-name');
+      if (flash && detectedName) {
+        detectedName.textContent = species.name;
+        flash.classList.add('active');
+        await waitForFlash(1600);
+        flash.classList.remove('active');
+      }
+    } else {
+      await waitForFlash(500);
+    }
+
+    if (hud) hud.style.display = 'none';
+    if (beam) beam.classList.remove('active');
     btn.disabled = false;
-    loading.style.display = 'none';
 
     setupReveal(species, confidence);
     goReveal();
   };
   img.onerror = function() {
-    loading.style.display = 'none';
+    if (hud) hud.style.display = 'none';
+    if (beam) beam.classList.remove('active');
     btn.disabled = false;
     console.log('Image failed to load');
   };

@@ -12,8 +12,12 @@ function saveState() {
     isPro: state.isPro,
     scansUsed: state.scansUsed,
     collection: state.collection,
+    journal: state.journal,
     isDark: state.isDark,
     introMode: state.introMode,
+    expeditionScans: state.expeditionScans,
+    expeditionTier: state.expeditionTier,
+    unlockedFeatures: state.unlockedFeatures,
     _user: WILDEX_USER || null
   };
   localStorage.setItem(key, JSON.stringify(data));
@@ -28,20 +32,13 @@ function upgradeToProDemo() {
 }
 
 function updateProUI() {
-  // Update nav Pro item
-  const navPro = document.getElementById('nav-pro');
-  if (navPro && state.isPro) {
-    navPro.classList.add('nav-pro');
-    const label = navPro.querySelector('.nav-pro-label');
-    if (label && !label.querySelector('.nav-pro-star')) {
-      label.innerHTML = 'Pro <span class="nav-pro-star">⭐</span>';
-    }
-  }
+  // Update expedition badge
+  updateExpeditionUI();
   // Update scan counter
   const scanCounters = document.querySelectorAll('.scan-counter-value');
   scanCounters.forEach(el => {
     if (state.isPro) {
-      el.textContent = 'PRO \u221E';
+      el.textContent = state.expeditionTier === 'seedling' ? state.scansUsed + ' / ' + state.scansMax : state.scansUsed + ' / \u221E';
       el.style.color = 'var(--day-accent)';
     } else {
       el.textContent = state.scansUsed + ' / ' + state.scansMax;
@@ -65,7 +62,7 @@ function showPage(pageId) {
   }
   
   const navItems = document.querySelectorAll('.nav-item');
-  if (pageId === 'home') navItems[0].classList.add('active');
+  if (pageId === 'home' || pageId === 'impact' || pageId === 'journal') navItems[0].classList.add('active');
   if (pageId === 'scan') navItems[1].classList.add('active');
   if (pageId === 'collection') navItems[2].classList.add('active');
   if (pageId === 'profile') navItems[3].classList.add('active');
@@ -80,12 +77,34 @@ function goHome() {
 }
 
 function goScan() {
-  if (!state.isPro && state.scansUsed >= state.scansMax) {
+  const tier = EXPEDITION_TIERS.find(t => t.id === state.expeditionTier) || EXPEDITION_TIERS[0];
+  if (state.scansUsed >= tier.scansMax && !state.isPro) {
     showFreemium();
     return;
   }
   document.getElementById('page-reveal').classList.add('hidden');
   document.getElementById('model-loading').style.display = 'none';
+
+  // Reset scan HUD state
+  const hud = document.getElementById('scan-hud');
+  const beam = document.getElementById('scan-hud-beam');
+  const flash = document.getElementById('scan-detected-flash');
+  if (hud) hud.style.display = 'none';
+  if (beam) beam.classList.remove('active');
+  if (flash) flash.classList.remove('active');
+
+  // Reset data lines
+  const dataLines = document.querySelectorAll('.scan-hud-data-line');
+  const defaultLabels = ['BARK TEXTURE: SCANNING_', 'LEAF MORPHOLOGY: --', 'DBH ESTIMATE: --', 'CONFIDENCE: --'];
+  dataLines.forEach((line, i) => {
+    line.textContent = defaultLabels[i] || '';
+    line.setAttribute('data-status', i === 0 ? 'scanning' : 'waiting');
+    if (i === 3) line.style.display = 'none';
+  });
+
+  // Update expedition scan badge
+  updateScanExpeditionBadge();
+
   showPage('scan');
   initCamera();
   loadTMModel();
@@ -115,14 +134,29 @@ function goSubscription() {
   showPage('subscription');
 }
 
+function goImpact() {
+  document.getElementById('page-reveal').classList.add('hidden');
+  stopCamera();
+  showPage('impact');
+  renderImpact();
+}
+
+function goJournal() {
+  document.getElementById('page-reveal').classList.add('hidden');
+  stopCamera();
+  showPage('journal');
+  renderJournal();
+}
+
 // Home
 function renderHome() {
   const counterEl = document.getElementById('scan-counter');
+  const tier = EXPEDITION_TIERS.find(t => t.id === state.expeditionTier) || EXPEDITION_TIERS[0];
   if (state.isPro) {
-    counterEl.textContent = 'PRO \u221E';
-    counterEl.style.color = 'var(--day-accent)';
+    counterEl.textContent = state.scansUsed + ' / \u221E';
+    counterEl.style.color = tier.color;
   } else {
-    counterEl.textContent = state.scansUsed + ' / ' + state.scansMax;
+    counterEl.textContent = state.scansUsed + ' / ' + tier.scansMax;
     counterEl.style.color = '';
   }
   const recentEl = document.getElementById('recent-finds');
@@ -339,7 +373,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (state.isDark) {
     document.body.setAttribute('data-theme', 'night');
   }
+  // Retroactive: populate journal from collection if empty
+  console.log('[WildDex] Init check — collection:', state.collection.length, 'journal:', state.journal ? state.journal.length : 'undefined');
+  if ((!state.journal || state.journal.length === 0) && state.collection.length > 0) {
+    state.journal = state.collection.map((id, index) => {
+      const s = SPECIES.find(sp => sp.id === id);
+      if (!s) return null;
+      return {
+        id: s.id,
+        name: s.name,
+        species: s.species,
+        rarity: s.rarity,
+        conservation: s.conservation,
+        timestamp: Date.now() - (state.collection.length - index) * 86400000,
+        specimenId: btoa(s.id + '-' + index).substring(0, 8).toUpperCase(),
+        confidence: 0.85,
+        location: 'Malaysia'
+      };
+    }).filter(Boolean);
+    saveState();
+    console.log('[WildDex] Retroactive journal fill:', state.journal.length, 'entries');
+  }
   updateProUI();
+  updateExpeditionUI();
+  updateScanExpeditionBadge();
   renderHome();
   initIntro();
   document.querySelectorAll('.modal-overlay').forEach(m => {
@@ -348,3 +405,229 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+/* ===== Impact Dashboard ===== */
+
+function renderImpact() {
+  const statsEl = document.getElementById('impact-stats');
+  const bioEl = document.getElementById('impact-biodiversity');
+  const carbonEl = document.getElementById('impact-carbon');
+  const milestoneEl = document.getElementById('impact-milestones');
+
+  const totalSpecies = SPECIES.length;
+  const collected = state.collection.length;
+  const pct = Math.round((collected / totalSpecies) * 100);
+
+  // Expedition progress
+  const expProgress = getExpeditionProgress();
+
+  // Count rare/legendary
+  let rareCount = 0;
+  let legendaryCount = 0;
+  let totalCarbon = 0;
+  state.collection.forEach(id => {
+    const s = SPECIES.find(sp => sp.id === id);
+    if (!s) return;
+    if (s.rarity === 'rare') rareCount++;
+    if (s.rarity === 'legendary') legendaryCount++;
+    const h = parseInt(s.height);
+    if (!isNaN(h)) totalCarbon += Math.round(h * 3.5);
+  });
+
+  // Stat tiles
+  const tierLabel = state.expeditionTier === 'researcher' || state.expeditionTier === 'ranger'
+    ? 'Field Researcher'
+    : expProgress.current.name;
+  statsEl.innerHTML = `
+    <div class="impact-stat">
+      <div class="impact-stat-value">${collected}/${totalSpecies}</div>
+      <div class="impact-stat-label">Species Found</div>
+    </div>
+    <div class="impact-stat">
+      <div class="impact-stat-value">${rareCount + legendaryCount}</div>
+      <div class="impact-stat-label">Rare Protected</div>
+    </div>
+    <div class="impact-stat">
+      <div class="impact-stat-value">${totalCarbon}</div>
+      <div class="impact-stat-label">kg CO₂/yr</div>
+    </div>
+    <div class="impact-stat">
+      <div class="impact-stat-value">${state.expeditionScans}</div>
+      <div class="impact-stat-label">Scans Done</div>
+    </div>
+  `;
+
+  // Expedition tier badge
+  const headerEl = document.querySelector('.impact-header');
+  if (headerEl && !headerEl.querySelector('.expedition-tier-badge')) {
+    const badge = document.createElement('div');
+    badge.className = 'expedition-tier-badge';
+    badge.style.color = expProgress.current.color;
+    badge.innerHTML = `<span class="expedition-tier-label">${tierLabel}</span>`;
+    headerEl.appendChild(badge);
+  }
+
+  // Expedition progress bar
+  const progressContainer = document.getElementById('impact-expedition-progress');
+  if (progressContainer) {
+    if (expProgress.next) {
+      progressContainer.innerHTML = `
+        <div class="pixel-bar-row">
+          <div class="pixel-bar-label">Next: ${expProgress.next.name}</div>
+          <div class="pixel-bar-track">${renderPixelBlocks(expProgress.percent, 100, expProgress.current.color)}</div>
+          <div class="pixel-bar-value">${expProgress.percent}%</div>
+        </div>
+        <div style="font-family: var(--font-body); font-size: 14px; color: var(--day-muted); margin-top: 4px;">
+          ${expProgress.scansNeeded} more scan${expProgress.scansNeeded !== 1 ? 's' : ''} to unlock ${expProgress.next.name}
+        </div>
+      `;
+    } else {
+      progressContainer.innerHTML = `
+        <div class="pixel-bar-row">
+          <div class="pixel-bar-label">Ranger — Max Tier</div>
+          <div class="pixel-bar-track">${renderPixelBlocks(100, 100, '#DC2626')}</div>
+          <div class="pixel-bar-value">MAX</div>
+        </div>
+        <div style="font-family: var(--font-body); font-size: 14px; color: var(--day-muted); margin-top: 4px;">
+          All expedition tiers unlocked!
+        </div>
+      `;
+    }
+  }
+
+  // Biodiversity bar chart (by rarity)
+  const rarityCounts = { common: 0, uncommon: 0, rare: 0, legendary: 0 };
+  state.collection.forEach(id => {
+    const s = SPECIES.find(sp => sp.id === id);
+    if (s) rarityCounts[s.rarity]++;
+  });
+  const rarityMax = Math.max(...Object.values(rarityCounts), 1);
+  bioEl.innerHTML = `
+    <div class="pixel-bar-row">
+      <div class="pixel-bar-label">Common</div>
+      <div class="pixel-bar-track">${renderPixelBlocks(rarityCounts.common, rarityMax, '#6B7280')}</div>
+      <div class="pixel-bar-value">${rarityCounts.common}</div>
+    </div>
+    <div class="pixel-bar-row">
+      <div class="pixel-bar-label">Uncommon</div>
+      <div class="pixel-bar-track">${renderPixelBlocks(rarityCounts.uncommon, rarityMax, '#2D6A4F')}</div>
+      <div class="pixel-bar-value">${rarityCounts.uncommon}</div>
+    </div>
+    <div class="pixel-bar-row">
+      <div class="pixel-bar-label">Rare</div>
+      <div class="pixel-bar-track">${renderPixelBlocks(rarityCounts.rare, rarityMax, '#D4AF37')}</div>
+      <div class="pixel-bar-value">${rarityCounts.rare}</div>
+    </div>
+    <div class="pixel-bar-row">
+      <div class="pixel-bar-label">Legendary</div>
+      <div class="pixel-bar-track">${renderPixelBlocks(rarityCounts.legendary, rarityMax, '#DC2626')}</div>
+      <div class="pixel-bar-value">${rarityCounts.legendary}</div>
+    </div>
+  `;
+
+  // Carbon bar chart (top 5 species by carbon)
+  const carbonData = state.collection.map(id => {
+    const s = SPECIES.find(sp => sp.id === id);
+    if (!s) return null;
+    const h = parseInt(s.height);
+    return { name: s.name, carbon: isNaN(h) ? 0 : Math.round(h * 3.5) };
+  }).filter(Boolean).sort((a, b) => b.carbon - a.carbon).slice(0, 5);
+  const carbonMax = Math.max(...carbonData.map(d => d.carbon), 1);
+  carbonEl.innerHTML = carbonData.map(d => `
+    <div class="pixel-bar-row">
+      <div class="pixel-bar-label">${d.name}</div>
+      <div class="pixel-bar-track">${renderPixelBlocks(d.carbon, carbonMax, '#16A34A')}</div>
+      <div class="pixel-bar-value">${d.carbon}</div>
+    </div>
+  `).join('') || '<div class="pixel-bar-row"><div class="pixel-bar-label">-</div><div class="pixel-bar-track"></div><div class="pixel-bar-value">0</div></div>';
+
+  // Milestones
+  const milestones = [
+    { label: 'First Scan', value: state.scansUsed >= 1, icon: '🔍' },
+    { label: '10 Scans', value: state.scansUsed >= 10, icon: '🔬' },
+    { label: 'First Rare', value: rareCount >= 1, icon: '💎' },
+    { label: 'First Legendary', value: legendaryCount >= 1, icon: '👑' },
+    { label: 'Half Collection', value: collected >= totalSpecies / 2, icon: '📚' },
+    { label: 'Full Collection', value: collected >= totalSpecies, icon: '🏆' },
+  ];
+  milestoneEl.innerHTML = milestones.map(m => `
+    <div class="milestone ${m.value ? 'unlocked' : 'locked'}">
+      <div class="milestone-icon">${m.icon}</div>
+      <div class="milestone-label">${m.label}</div>
+      <div class="milestone-value">${m.value ? 'DONE' : 'LOCK'}</div>
+    </div>
+  `).join('');
+}
+
+function renderPixelBlocks(value, max, color) {
+  const total = 20;
+  const filled = Math.round((value / max) * total);
+  let html = '';
+  for (let i = 0; i < total; i++) {
+    const active = i < filled ? `background: ${color}; border-color: ${color};` : '';
+    html += `<div class="pixel-bar-block" style="${active}"></div>`;
+  }
+  return html;
+}
+
+/* ===== Field Journal ===== */
+
+function renderJournal() {
+  const listEl = document.getElementById('journal-list');
+  const emptyEl = document.getElementById('journal-empty');
+
+  console.log('[WildDex] renderJournal — entries:', state.journal ? state.journal.length : 0, 'listEl:', !!listEl, 'emptyEl:', !!emptyEl);
+
+  if (!listEl || !emptyEl) {
+    console.error('[WildDex] Journal elements not found in DOM');
+    return;
+  }
+
+  if (!state.journal || state.journal.length === 0) {
+    listEl.innerHTML = '';
+    emptyEl.style.display = 'flex';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  listEl.innerHTML = state.journal.map((entry, index) => {
+    const date = new Date(entry.timestamp);
+    const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    const species = SPECIES.find(s => s.id === entry.id);
+    const pixelSvg = species ? species.pixels.map(p =>
+      `<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="${p.c}"/>`
+    ).join('') : '';
+    const rarityColor = {
+      common: '#6B7280',
+      uncommon: '#2D6A4F',
+      rare: '#D4AF37',
+      legendary: '#DC2626'
+    }[entry.rarity] || '#6B7280';
+
+    return `
+      <div class="journal-entry" style="animation-delay: ${index * 60}ms;">
+        <div class="journal-entry-icon">
+          <svg viewBox="0 0 32 32" width="40" height="40" style="image-rendering:pixelated;">
+            ${pixelSvg}
+          </svg>
+        </div>
+        <div class="journal-entry-info">
+          <div class="journal-entry-top">
+            <span class="journal-entry-name">${entry.name}</span>
+            <span class="journal-entry-rarity" style="color:${rarityColor};">${entry.rarity}</span>
+          </div>
+          <div class="journal-entry-meta">
+            <span>#${entry.specimenId}</span>
+            <span>|</span>
+            <span>${dateStr} ${timeStr}</span>
+            <span>|</span>
+            <span>${Math.round((entry.confidence || 0) * 100)}% AI</span>
+          </div>
+          <div class="journal-entry-species">${entry.species}</div>
+        </div>
+        <div class="journal-entry-conservation ${entry.conservation.replace(/\s+/g, '-')}">${entry.conservation}</div>
+      </div>
+    `;
+  }).join('');
+}

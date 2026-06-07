@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WildDex Scan HUD Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f0a;
+      --hud-bg: rgba(10, 15, 10, 0.92);
+      --hud-border: #2D6A4F;
+      --hud-accent: #4ADE80;
+      --hud-text: #e8f5e9;
+      --hud-muted: #5a7a5a;
+      --hud-beam: rgba(74, 222, 128, 0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--hud-text);
+      font-family: 'VT323', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      gap: 24px;
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    .header-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      color: var(--hud-accent);
+      margin-bottom: 8px;
+    }
+
+    .header-sub {
+      font-size: 18px;
+      color: var(--hud-muted);
+    }
+
+    /* Viewfinder container */
+    .viewfinder {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 3/4;
+      background: #000;
+      border: 3px solid var(--hud-border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Camera feed placeholder */
+    .camera-feed {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #1a261a 0%, #0a150a 50%, #1a261a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .camera-feed::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(74, 222, 128, 0.03) 2px,
+        rgba(74, 222, 128, 0.03) 4px
+      );
+    }
+
+    .camera-icon {
+      width: 80px;
+      height: 80px;
+      opacity: 0.2;
+    }
+
+    /* HUD Overlay */
+    .scan-hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* Corner brackets */
+    .scan-hud-corner {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--hud-accent);
+    }
+
+    .scan-hud-corner-tl {
+      top: 12px;
+      left: 12px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .scan-hud-corner-tr {
+      top: 12px;
+      right: 12px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .scan-hud-corner-bl {
+      bottom: 12px;
+      left: 12px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .scan-hud-corner-br {
+      bottom: 12px;
+      right: 12px;
+      border-left: none;
+      border-top: none;
+    }
+
+    /* Center crosshair */
+    .scan-hud-crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+    }
+
+    .scan-hud-crosshair-h {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--hud-accent);
+      transform: translateY(-50%);
+      opacity: 0.6;
+    }
+
+    .scan-hud-crosshair-v {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: var(--hud-accent);
+      transform: translateX(-50%);
+      opacity: 0.6;
+    }
+
+    .scan-hud-crosshair-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background: var(--hud-accent);
+    }
+
+    /* Scan beam */
+    .scan-hud-beam {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--hud-beam);
+      border-top: 2px solid var(--hud-accent);
+      border-bottom: 2px solid var(--hud-accent);
+      animation: beam-sweep 2.5s steps(10) infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes beam-sweep {
+      0% { top: 0; }
+      50% { top: calc(100% - 4px); }
+      100% { top: 0; }
+    }
+
+    /* Waveform */
+    .scan-hud-waveform {
+      position: absolute;
+      bottom: 80px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .scan-hud-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 30px;
+    }
+
+    .scan-hud-bar {
+      width: 8px;
+      background: var(--hud-accent);
+      opacity: 0.6;
+      animation: bar-dance 0.4s steps(3) infinite alternate;
+    }
+
+    .scan-hud-bar:nth-child(1) { height: 6px; animation-delay: 0ms; }
+    .scan-hud-bar:nth-child(2) { height: 14px; animation-delay: 50ms; }
+    .scan-hud-bar:nth-child(3) { height: 22px; animation-delay: 100ms; }
+    .scan-hud-bar:nth-child(4) { height: 10px; animation-delay: 150ms; }
+    .scan-hud-bar:nth-child(5) { height: 18px; animation-delay: 200ms; }
+    .scan-hud-bar:nth-child(6) { height: 26px; animation-delay: 250ms; }
+    .scan-hud-bar:nth-child(7) { height: 12px; animation-delay: 300ms; }
+    .scan-hud-bar:nth-child(8) { height: 20px; animation-delay: 350ms; }
+    .scan-hud-bar:nth-child(9) { height: 8px; animation-delay: 400ms; }
+    .scan-hud-bar:nth-child(10) { height: 16px; animation-delay: 450ms; }
+    .scan-hud-bar:nth-child(11) { height: 24px; animation-delay: 500ms; }
+    .scan-hud-bar:nth-child(12) { height: 10px; animation-delay: 550ms; }
+
+    @keyframes bar-dance {
+      0% { opacity: 0.3; transform: scaleY(0.7); }
+      100% { opacity: 0.9; transform: scaleY(1.1); }
+    }
+
+    .scan-hud-waveform-label {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 8px;
+      color: var(--hud-accent);
+      letter-spacing: 1px;
+    }
+
+    /* Data readout */
+    .scan-hud-data {
+      position: absolute;
+      top: 48px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .scan-hud-data-line {
+      font-family: 'VT323', monospace;
+      font-size: 14px;
+      color: var(--hud-muted);
+      display: flex;
+      gap: 8px;
+    }
+
+    .scan-hud-data-line[data-status="scanning"] {
+      color: var(--hud-accent);
+      animation: data-blink 0.6s steps(2) infinite;
+    }
+
+    .scan-hud-data-line[data-status="done"] {
+      color: var(--hud-text);
+    }
+
+    @keyframes data-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .scan-hud-data-prompt {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 8px;
+      color: var(--hud-accent);
+      margin-top: 4px;
+    }
+
+    /* Species detected flash */
+    .scan-detected-flash {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 10, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      animation: flash-pulse 2s steps(4) infinite;
+      border: 3px solid var(--hud-accent);
+      margin: 24px;
+    }
+
+    @keyframes flash-pulse {
+      0%, 100% { border-color: var(--hud-accent); }
+      50% { border-color: var(--hud-border); }
+    }
+
+    .scan-detected-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .scan-detected-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      color: var(--hud-accent);
+    }
+
+    .scan-detected-name {
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      color: var(--hud-text);
+    }
+
+    .scan-detected-sub {
+      font-family: 'VT323', monospace;
+      font-size: 14px;
+      color: var(--hud-muted);
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hud-btn {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      padding: 12px 20px;
+      background: var(--hud-bg);
+      border: 3px solid var(--hud-border);
+      color: var(--hud-accent);
+      cursor: pointer;
+    }
+
+    .hud-btn:hover {
+      background: var(--hud-border);
+    }
+
+    .hud-btn:active {
+      transform: translate(2px, 2px);
+    }
+
+    /* Status panel */
+    .status-panel {
+      width: 100%;
+      max-width: 400px;
+      border: 2px solid var(--hud-border);
+      padding: 16px;
+      background: var(--hud-bg);
+    }
+
+    .status-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      color: var(--hud-accent);
+      margin-bottom: 12px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 16px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--hud-border);
+    }
+
+    .status-label {
+      color: var(--hud-muted);
+    }
+
+    .status-value {
+      color: var(--hud-text);
+    }
+
+    .status-value.active {
+      color: var(--hud-accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-title">SCAN HUD PREVIEW</div>
+    <div class="header-sub">Pixel-art scientific scanner interface</div>
+  </div>
+
+  <div class="viewfinder" id="viewfinder">
+    <div class="camera-feed">
+      <svg class="camera-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="12" cy="12" r="4"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+    </div>
+
+    <!-- HUD Overlay -->
+    <div class="scan-hud" id="scan-hud">
+      <!-- Corner brackets -->
+      <div class="scan-hud-corner scan-hud-corner-tl"></div>
+      <div class="scan-hud-corner scan-hud-corner-tr"></div>
+      <div class="scan-hud-corner scan-hud-corner-bl"></div>
+      <div class="scan-hud-corner scan-hud-corner-br"></div>
+
+      <!-- Center crosshair -->
+      <div class="scan-hud-crosshair">
+        <div class="scan-hud-crosshair-h"></div>
+        <div class="scan-hud-crosshair-v"></div>
+        <div class="scan-hud-crosshair-dot"></div>
+      </div>
+
+      <!-- Scan beam sweep -->
+      <div class="scan-hud-beam"></div>
+
+      <!-- Bio-scan waveform -->
+      <div class="scan-hud-waveform">
+        <div class="scan-hud-bars">
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+          <div class="scan-hud-bar"></div>
+        </div>
+        <div class="scan-hud-waveform-label">ANALYZING BIOMETRICS</div>
+      </div>
+
+      <!-- Scanner data readout -->
+      <div class="scan-hud-data" id="scan-hud-data">
+        <div class="scan-hud-data-line" data-status="scanning">
+          <span>>></span>
+          <span>BARK TEXTURE: SCANNING_</span>
+        </div>
+        <div class="scan-hud-data-line" data-status="waiting">
+          <span>>></span>
+          <span>LEAF MORPHOLOGY: --</span>
+        </div>
+        <div class="scan-hud-data-line" data-status="waiting">
+          <span>>></span>
+          <span>DBH ESTIMATE: --</span>
+        </div>
+        <div class="scan-hud-data-line" data-status="waiting">
+          <span>>></span>
+          <span>CONFIDENCE: --</span>
+        </div>
+        <div class="scan-hud-data-prompt">TAP TO SKIP</div>
+      </div>
+    </div>
+
+    <!-- Species Detected Flash (hidden by default) -->
+    <div class="scan-detected-flash" id="scan-detected-flash" style="display: none;">
+      <svg class="scan-detected-icon" viewBox="0 0 32 32" style="image-rendering: pixelated;">
+        <rect x="14" y="2" width="4" height="4" fill="#4ADE80"/>
+        <rect x="10" y="6" width="12" height="4" fill="#22C55E"/>
+        <rect x="6" y="10" width="20" height="4" fill="#16A34A"/>
+        <rect x="14" y="14" width="4" height="18" fill="#92400E"/>
+      </svg>
+      <div class="scan-detected-title">SPECIES IDENTIFIED</div>
+      <div class="scan-detected-name" id="detected-name">Meranti</div>
+      <div class="scan-detected-sub">Tap to view species card</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="hud-btn" onclick="toggleScan()">TOGGLE SCAN</button>
+    <button class="hud-btn" onclick="showDetected()">SHOW DETECTED</button>
+    <button class="hud-btn" onclick="resetHud()">RESET</button>
+  </div>
+
+  <div class="status-panel">
+    <div class="status-title">HUD STATUS</div>
+    <div class="status-row">
+      <span class="status-label">Scan Beam</span>
+      <span class="status-value active" id="status-beam">ACTIVE</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">Waveform</span>
+      <span class="status-value active" id="status-waveform">ACTIVE</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">Data Lines</span>
+      <span class="status-value" id="status-data">IDLE</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">Detected Flash</span>
+      <span class="status-value" id="status-flash">HIDDEN</span>
+    </div>
+  </div>
+
+  <script>
+    let scanning = true;
+    let scanInterval;
+
+    function toggleScan() {
+      scanning = !scanning;
+      const beam = document.querySelector('.scan-hud-beam');
+      const bars = document.querySelectorAll('.scan-hud-bar');
+      
+      if (scanning) {
+        beam.style.animationPlayState = 'running';
+        bars.forEach(bar => bar.style.animationPlayState = 'running');
+        document.getElementById('status-beam').textContent = 'ACTIVE';
+        document.getElementById('status-beam').classList.add('active');
+        document.getElementById('status-waveform').textContent = 'ACTIVE';
+        document.getElementById('status-waveform').classList.add('active');
+      } else {
+        beam.style.animationPlayState = 'paused';
+        bars.forEach(bar => bar.style.animationPlayState = 'paused');
+        document.getElementById('status-beam').textContent = 'PAUSED';
+        document.getElementById('status-beam').classList.remove('active');
+        document.getElementById('status-waveform').textContent = 'PAUSED';
+        document.getElementById('status-waveform').classList.remove('active');
+      }
+    }
+
+    function showDetected() {
+      const flash = document.getElementById('scan-detected-flash');
+      const names = ['Meranti', 'Keruing', 'Cengal', 'Rafflesia', 'Jati'];
+      const randomName = names[Math.floor(Math.random() * names.length)];
+      document.getElementById('detected-name').textContent = randomName;
+      flash.style.display = 'flex';
+      document.getElementById('status-flash').textContent = 'VISIBLE';
+      document.getElementById('status-flash').classList.add('active');
+      
+      setTimeout(() => {
+        flash.style.display = 'none';
+        document.getElementById('status-flash').textContent = 'HIDDEN';
+        document.getElementById('status-flash').classList.remove('active');
+      }, 3000);
+    }
+
+    function resetHud() {
+      scanning = true;
+      const beam = document.querySelector('.scan-hud-beam');
+      const bars = document.querySelectorAll('.scan-hud-bar');
+      beam.style.animationPlayState = 'running';
+      bars.forEach(bar => bar.style.animationPlayState = 'running');
+      
+      document.getElementById('scan-detected-flash').style.display = 'none';
+      document.getElementById('status-beam').textContent = 'ACTIVE';
+      document.getElementById('status-beam').classList.add('active');
+      document.getElementById('status-waveform').textContent = 'ACTIVE';
+      document.getElementById('status-waveform').classList.add('active');
+      document.getElementById('status-flash').textContent = 'HIDDEN';
+      document.getElementById('status-flash').classList.remove('active');
+      
+      animateDataLines();
+    }
+
+    function animateDataLines() {
+      const lines = document.querySelectorAll('.scan-hud-data-line');
+      const prompts = [
+        ['BARK TEXTURE: SCANNING_', 'LEAF MORPHOLOGY: --', 'DBH ESTIMATE: --', 'CONFIDENCE: --'],
+        ['BARK TEXTURE: CAPTURED', 'LEAF MORPHOLOGY: SCANNING_', 'DBH ESTIMATE: --', 'CONFIDENCE: --'],
+        ['BARK TEXTURE: CAPTURED', 'LEAF MORPHOLOGY: MATCHED', 'DBH ESTIMATE: ANALYZED', 'CONFIDENCE: SCANNING_'],
+        ['BARK TEXTURE: CAPTURED', 'LEAF MORPHOLOGY: MATCHED', 'DBH ESTIMATE: ANALYZED', 'CONFIDENCE: 87%']
+      ];
+      
+      let step = 0;
+      document.getElementById('status-data').textContent = 'SCANNING';
+      document.getElementById('status-data').classList.add('active');
+      
+      const interval = setInterval(() => {
+        if (step >= prompts.length) {
+          clearInterval(interval);
+          document.getElementById('status-data').textContent = 'COMPLETE';
+          return;
+        }
+        
+        lines.forEach((line, i) => {
+          const text = line.querySelector('span:last-child');
+          if (text) text.textContent = prompts[step][i];
+          
+          if (prompts[step][i].includes('SCANNING')) {
+            line.setAttribute('data-status', 'scanning');
+          } else if (prompts[step][i].includes('--')) {
+            line.setAttribute('data-status', 'waiting');
+          } else {
+            line.setAttribute('data-status', 'done');
+          }
+        });
+        
+        step++;
+      }, 800);
+    }
+
+    // Start data line animation on load
+    setTimeout(animateDataLines, 500);
+  </script>
+</body>
+</html>

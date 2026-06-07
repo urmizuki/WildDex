@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WildDex Expedition Tiers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f0a;
+      --card: #111811;
+      --border: #1a261a;
+      --text: #e8f5e9;
+      --muted: #5a7a5a;
+      --accent: #d4af37;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'VT323', monospace;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .header-title {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 16px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .header-sub {
+      font-size: 20px;
+      color: var(--muted);
+    }
+
+    .tiers-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tier-card {
+      border: 3px solid;
+      background: var(--card);
+      padding: 20px;
+      position: relative;
+      transition: transform 0.15s;
+    }
+
+    .tier-card:hover {
+      transform: translateX(4px);
+    }
+
+    .tier-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tier-name {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .tier-scans {
+      font-size: 16px;
+      color: var(--muted);
+      border: 2px solid var(--border);
+      padding: 4px 10px;
+      background: var(--bg);
+    }
+
+    .tier-divider {
+      height: 2px;
+      background: currentColor;
+      opacity: 0.3;
+      margin: 12px 0;
+    }
+
+    .tier-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tier-benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .tier-benefit-check {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tier-locked {
+      opacity: 0.4;
+    }
+
+    .tier-locked .tier-benefit {
+      color: var(--muted);
+    }
+
+    /* Tier-specific colors */
+    .tier-seedling {
+      border-color: #6b7280;
+      color: #e5e7eb;
+    }
+    .tier-seedling .tier-name { color: #e5e7eb; }
+    .tier-seedling .tier-benefit-check { color: #6b7280; }
+
+    .tier-sapling {
+      border-color: #2d6a4f;
+      color: #4ade80;
+    }
+    .tier-sapling .tier-name { color: #4ade80; }
+    .tier-sapling .tier-benefit-check { color: #2d6a4f; }
+
+    .tier-forester {
+      border-color: #d4af37;
+      color: #fbbf24;
+    }
+    .tier-forester .tier-name { color: #fbbf24; }
+    .tier-forester .tier-benefit-check { color: #d4af37; }
+    .tier-forester .tier-scans {
+      animation: gold-shimmer 1.5s steps(4) infinite;
+      border-color: #d4af37;
+      color: #fbbf24;
+    }
+
+    .tier-researcher {
+      border-color: #2563eb;
+      color: #60a5fa;
+    }
+    .tier-researcher .tier-name { color: #60a5fa; }
+    .tier-researcher .tier-benefit-check { color: #2563eb; }
+
+    .tier-ranger {
+      border-color: #dc2626;
+      color: #f87171;
+    }
+    .tier-ranger .tier-name { color: #f87171; }
+    .tier-ranger .tier-benefit-check { color: #dc2626; }
+
+    @keyframes gold-shimmer {
+      0% { color: #d4af37; border-color: #d4af37; }
+      33% { color: #fbbf24; border-color: #fbbf24; }
+      66% { color: #fde047; border-color: #fde047; }
+      100% { color: #d4af37; border-color: #d4af37; }
+    }
+
+    .progress-track {
+      width: 100%;
+      max-width: 480px;
+      height: 8px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      position: relative;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 480px;
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid var(--border);
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* Pixel tree decoration */
+    .pixel-tree {
+      width: 32px;
+      height: 40px;
+      image-rendering: pixelated;
+      margin: 0 auto 16px;
+    }
+  </style>
+</head>
+<body>
+  <svg class="pixel-tree" viewBox="0 0 32 40">
+    <rect x="14" y="2" width="4" height="4" fill="#4ADE80"/>
+    <rect x="10" y="6" width="12" height="4" fill="#22C55E"/>
+    <rect x="6" y="10" width="20" height="4" fill="#16A34A"/>
+    <rect x="14" y="14" width="4" height="26" fill="#92400E"/>
+  </svg>
+
+  <div class="header">
+    <div class="header-title">EXPEDITION TIERS</div>
+    <div class="header-sub">Unlock features by scanning trees</div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" style="width: 0%;"></div>
+  </div>
+  <div class="progress-labels">
+    <span>0</span>
+    <span>5</span>
+    <span>10</span>
+    <span>25</span>
+    <span>50</span>
+  </div>
+
+  <div class="tiers-container">
+    <!-- Seedling -->
+    <div class="tier-card tier-seedling">
+      <div class="tier-header">
+        <span class="tier-name">Seedling</span>
+        <span class="tier-scans">0 scans</span>
+      </div>
+      <div class="tier-divider"></div>
+      <div class="tier-benefits">
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Basic scan mode</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>5 scans per day</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Common species identification</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sapling -->
+    <div class="tier-card tier-sapling">
+      <div class="tier-header">
+        <span class="tier-name">Sapling</span>
+        <span class="tier-scans">5 scans</span>
+      </div>
+      <div class="tier-divider"></div>
+      <div class="tier-benefits">
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Collection grid view</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>10 scans per day</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Uncommon species unlocked</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forester -->
+    <div class="tier-card tier-forester">
+      <div class="tier-header">
+        <span class="tier-name">Forester</span>
+        <span class="tier-scans">10 scans</span>
+      </div>
+      <div class="tier-divider"></div>
+      <div class="tier-benefits">
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span><strong>Expedition Mode</strong> — gold HUD</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Unlimited daily scans</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Rare & Legendary species</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>"Tag as seen" tracking</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Researcher -->
+    <div class="tier-card tier-researcher">
+      <div class="tier-header">
+        <span class="tier-name">Researcher</span>
+        <span class="tier-scans">25 scans</span>
+      </div>
+      <div class="tier-divider"></div>
+      <div class="tier-benefits">
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span><strong>"Field Researcher"</strong> title</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Habitat data on all cards</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Export collection to PDF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranger -->
+    <div class="tier-card tier-ranger">
+      <div class="tier-header">
+        <span class="tier-name">Ranger</span>
+        <span class="tier-scans">50 scans</span>
+      </div>
+      <div class="tier-divider"></div>
+      <div class="tier-benefits">
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Full habitat maps on all card backs</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Carbon sequestration analytics</span>
+        </div>
+        <div class="tier-benefit">
+          <span class="tier-benefit-check">+</span>
+          <span>Legendary species priority detection</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    No payment required — progress by scanning trees!
+  </div>
+</body>
+</html>

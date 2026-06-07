@@ -1,7 +1,7 @@
 'use client'
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase-client'
 import { useRouter } from 'next/navigation'
 
@@ -14,11 +14,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [configured, setConfigured] = useState(true)
   const [resetStep, setResetStep] = useState(0)
-  const [otp, setOtp] = useState('')
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [newPassword, setNewPassword] = useState('')
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [timer, setTimer] = useState(0)
   const router = useRouter()
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
   useEffect(() => {
     let supabase
@@ -95,7 +96,8 @@ export default function LoginPage() {
   }
 
   async function handleVerifyOtp() {
-    if (!otp) { setError('Enter the code'); return }
+    const fullOtp = otp.join('')
+    if (fullOtp.length < 6) { setError('Enter the complete code'); return }
     setLoading(true)
     setError('')
     const storedCode = localStorage.getItem('wd_reset_code')
@@ -104,7 +106,7 @@ export default function LoginPage() {
     if (!storedCode || !storedEmail || !expiry) { setError('No code found. Request a new one.'); setLoading(false); return }
     if (Date.now() > Number(expiry)) { setError('Code expired. Request a new one.'); setLoading(false); return }
     if (email !== storedEmail) { setError('Email mismatch. Request a new code.'); setLoading(false); return }
-    if (otp !== storedCode) { setError('Wrong code'); setLoading(false); return }
+    if (fullOtp !== storedCode) { setError('Wrong code'); setLoading(false); return }
     localStorage.removeItem('wd_reset_code')
     localStorage.removeItem('wd_reset_email')
     localStorage.removeItem('wd_reset_expiry')
@@ -136,7 +138,7 @@ export default function LoginPage() {
 
   function cancelReset() {
     setResetStep(0)
-    setOtp('')
+    setOtp(['', '', '', '', '', ''])
     setNewPassword('')
     setError('')
     setSuccess('')
@@ -144,181 +146,395 @@ export default function LoginPage() {
     setTimer(0)
   }
 
-  const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+  function handleOtpChange(index: number, value: string) {
+    const digit = value.replace(/\D/g, '').slice(0, 1)
+    setOtp(prev => {
+      const next = [...prev]
+      next[index] = digit
+      return next
+    })
+    if (digit && index < 5) {
+      setTimeout(() => otpRefs.current[index + 1]?.focus(), 10)
+    }
+  }
+
+  function handleOtpKeyDown(index: number, e: React.KeyboardEvent) {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      setTimeout(() => otpRefs.current[index - 1]?.focus(), 10)
+    }
+    if (e.key === 'Enter') {
+      handleVerifyOtp()
+    }
+  }
+
+  const formatTimer = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+
+  const inputBase = {
+    width: '100%',
+    padding: '12px 16px',
+    background: 'rgba(0, 0, 0, 0.4)',
+    border: '3px solid #2D6A4F',
+    color: '#E2E8F0',
+    fontFamily: 'VT323, monospace',
+    fontSize: '20px',
+    outline: 'none',
+    transition: 'border-color 200ms ease-out',
+  } as const
+
+  const btnGreen = {
+    width: '100%',
+    padding: '14px',
+    background: '#16A34A',
+    color: '#E2E8F0',
+    border: '3px solid #4ADE80',
+    fontFamily: 'VT323, monospace',
+    fontSize: '22px',
+    letterSpacing: '2px',
+    cursor: 'pointer',
+    transition: 'transform 160ms ease-out, opacity 200ms',
+    outline: 'none',
+  } as const
+
+  // Pixel-art tree decorations for login background
+  const pixelTrees = [
+    { left: '5%', bottom: '12px', scale: 1.2 },
+    { left: '18%', bottom: '8px', scale: 0.9 },
+    { left: '72%', bottom: '10px', scale: 1.0 },
+    { left: '88%', bottom: '6px', scale: 1.3 },
+  ]
+
+  const panelSx = {
+    width: '100%',
+    maxWidth: '420px',
+    background: '#0a0f0a',
+    border: '4px solid #2D6A4F',
+    padding: '40px 32px',
+    boxShadow: '6px 6px 0 rgba(0, 0, 0, 0.4)',
+    animation: 'float-up 0.5s steps(6) forwards',
+    position: 'relative' as const,
+    overflow: 'hidden',
+  } as const
 
   return (
     <div style={{
       minHeight: '100dvh',
-      background: 'radial-gradient(ellipse at center, #1a1a2e 0%, #0a0f0a 100%)',
+      background: '#0a0f0a',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px',
       fontFamily: 'VT323, monospace',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '400px',
-        background: 'rgba(30, 41, 59, 0.9)',
-        border: '3px solid #4ADE80',
-        borderRadius: '12px',
-        padding: '40px 32px',
-        boxShadow: '0 0 40px rgba(74, 222, 128, 0.2)',
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <svg viewBox="0 0 32 32" width="64" height="64" style={{ imageRendering: 'pixelated', marginBottom: '12px' }}>
+      {/* Pixel tree decorations */}
+      {pixelTrees.map((t, i) => (
+        <div key={i} style={{
+          position: 'absolute',
+          bottom: t.bottom,
+          left: t.left,
+          transform: `scale(${t.scale})`,
+          opacity: 0.15,
+          pointerEvents: 'none',
+        }}>
+          <svg width="32" height="40" viewBox="0 0 32 40" style={{ imageRendering: 'pixelated' }}>
+            <rect x="14" y="4" width="4" height="4" fill="#4ADE80"/>
+            <rect x="10" y="8" width="12" height="4" fill="#22C55E"/>
+            <rect x="6" y="12" width="20" height="4" fill="#16A34A"/>
+            <rect x="10" y="16" width="12" height="4" fill="#22C55E"/>
+            <rect x="14" y="20" width="4" height="20" fill="#92400E"/>
+          </svg>
+        </div>
+      ))}
+
+      {/* Main card */}
+      <div style={panelSx}>
+
+        {/* Logo + Header */}
+        <div style={{
+          textAlign: 'center', marginBottom: '28px',
+          animation: 'float-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both',
+        }}>
+          {/* FORESTX badge */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 10px',
+            border: '2px solid #D4AF37',
+            marginBottom: '16px',
+            fontSize: '12px',
+            fontFamily: "'Press Start 2P', cursive",
+            color: '#FBBF24',
+            letterSpacing: '1px',
+          }}>
+            FORESTX HACKATHON 2026
+          </div>
+
+          <svg viewBox="0 0 32 32" width="72" height="72" style={{
+            imageRendering: 'pixelated',
+            marginBottom: '8px',
+            display: 'block',
+            margin: '0 auto 8px',
+          }}>
             <rect x="14" y="2" width="4" height="4" fill="#4ADE80"/>
             <rect x="10" y="6" width="12" height="4" fill="#22C55E"/>
             <rect x="6" y="10" width="20" height="4" fill="#16A34A"/>
             <rect x="14" y="14" width="4" height="18" fill="#92400E"/>
           </svg>
+
           <h1 style={{
             fontFamily: "'Press Start 2P', cursive",
-            fontSize: '24px',
+            fontSize: '22px',
             color: '#4ADE80',
-            textShadow: '0 0 20px rgba(74, 222, 128, 0.5)',
-            marginBottom: '8px',
+            marginBottom: '4px',
           }}>WildDex</h1>
-          <p style={{ color: '#86EFAC', fontSize: '20px' }}>Gotta Log &apos;Em All!</p>
+
+          <p style={{
+            color: '#86EFAC',
+            fontSize: '14px',
+            marginBottom: '4px',
+          }}>
+            AI-Driven Species Identification
+          </p>
+
+          <p style={{
+            color: '#94A3B8',
+            fontSize: '13px',
+          }}>
+            Case Study 4 &middot; FORESTX
+          </p>
         </div>
 
-{!configured ? (
+        {/* ====== NOT CONFIGURED ====== */}
+        {!configured ? (
           <div style={{
             textAlign: 'center',
             padding: '24px',
-            fontFamily: 'VT323, monospace',
-            fontSize: '20px',
+            fontSize: '18px',
             color: '#FBBF24',
             lineHeight: 1.6,
+            animation: 'float-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both',
           }}>
-            <div style={{ fontSize: '32px', marginBottom: '16px' }}>⚙</div>
-            Supabase not configured.<br/>
-            Set NEXT_PUBLIC_SUPABASE_URL<br/>
-            and NEXT_PUBLIC_SUPABASE_ANON_KEY<br/>
-            in .env.local
+            <div style={{
+              fontSize: '28px', marginBottom: '12px',
+              width: '40px', height: '40px', margin: '0 auto 12px',
+              border: '3px solid #FBBF24',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              lineHeight: 1,
+            }}>!</div>
+            Supabase not configured.
+            Set <span style={{ color: '#FBBF24', fontFamily: "'Press Start 2P', cursive", fontSize: '12px' }}>NEXT_PUBLIC_SUPABASE_URL</span>
+            {' '}and{' '}
+            <span style={{ color: '#FBBF24', fontFamily: "'Press Start 2P', cursive", fontSize: '12px' }}>NEXT_PUBLIC_SUPABASE_ANON_KEY</span>
+            {' '}in .env.local
           </div>
-        ) : resetStep === 1 ? (
-          <>
-          <p style={{ color: '#94A3B8', fontSize: '16px', textAlign: 'center', marginBottom: '16px' }}>
-            Enter the code sent to<br/>
-            <strong style={{ color: '#86EFAC', fontSize: '18px' }}>{email}</strong>
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <input
-              type="text"
-              placeholder="Enter 6-digit code"
-              value={otp}
-              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              maxLength={6}
-              style={{
-                padding: '12px 16px',
-                background: '#0F172A',
-                border: '2px solid #334155',
-                borderRadius: '8px',
-                color: '#E2E8F0',
-                fontFamily: 'VT323, monospace',
-                fontSize: '28px',
-                textAlign: 'center',
-                letterSpacing: '8px',
-                outline: 'none',
-              }}
-            />
-            <p style={{ color: '#94A3B8', fontSize: '16px', textAlign: 'center' }}>
-              {timer > 0 ? `Code expires in ${fmt(timer)}` : 'Code expired'}
+        ) : /* ====== OTP STEP ====== */
+        resetStep === 1 ? (
+          <div style={{ animation: 'float-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both' }}>
+            <p style={{ color: '#94A3B8', fontSize: '16px', textAlign: 'center', marginBottom: '20px', lineHeight: 1.5 }}>
+              Enter the code sent to<br/>
+              <span style={{ color: '#86EFAC', fontFamily: "'Press Start 2P', cursive", fontSize: '12px' }}>{email}</span>
             </p>
-            <button onClick={handleVerifyOtp} disabled={loading || otp.length < 6} style={{
-              padding: '14px',
-              background: '#4ADE80',
-              color: '#0F172A',
-              border: 'none',
-              borderRadius: '8px',
-              fontFamily: 'VT323, monospace',
-              fontSize: '22px',
-              cursor: loading || otp.length < 6 ? 'not-allowed' : 'pointer',
-              opacity: loading || otp.length < 6 ? 0.6 : 1,
-              letterSpacing: '2px',
+
+            {/* 6 OTP cells */}
+            <div style={{
+              display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '16px',
             }}>
-              {loading ? '...' : 'Verify Code'}
+              {otp.map((digit, i) => (
+                <input
+                  key={i}
+                  ref={el => { otpRefs.current[i] = el }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={e => handleOtpChange(i, e.target.value)}
+                  onKeyDown={e => handleOtpKeyDown(i, e)}
+                  onFocus={e => e.target.select()}
+                  style={{
+                    width: '48px',
+                    height: '56px',
+                    textAlign: 'center',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: digit
+                      ? '3px solid #4ADE80'
+                      : '3px solid #2D6A4F',
+                    color: '#4ADE80',
+                    fontFamily: 'VT323, monospace',
+                    fontSize: '28px',
+                    outline: 'none',
+                    transition: 'border-color 150ms ease-out',
+                    animation: digit ? 'otp-pop 0.15s steps(3)' : 'none',
+                    caretColor: '#4ADE80',
+                  }}
+                />
+              ))}
+            </div>
+
+            <p style={{
+              color: timer > 0 ? 'rgba(148, 163, 184, 0.7)' : '#EF4444',
+              fontSize: '14px', textAlign: 'center', marginBottom: '16px',
+            }}>
+              {timer > 0 ? `Code expires in ${formatTimer(timer)}` : 'Code expired — request a new one'}
+            </p>
+
+            <button
+              onClick={handleVerifyOtp}
+              disabled={loading || otp.join('').length < 6}
+              style={{
+                ...btnGreen,
+                opacity: loading || otp.join('').length < 6 ? 0.5 : 1,
+                cursor: loading || otp.join('').length < 6 ? 'not-allowed' : 'pointer',
+              }}
+              onMouseDown={e => {
+                if (!loading && otp.join('').length >= 6) {
+                  (e.currentTarget as HTMLElement).style.transform = 'scale(0.97)'
+                }
+              }}
+              onMouseUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                {loading && <span style={{
+                  display: 'inline-block', width: '14px', height: '14px',
+                  border: '2px solid transparent', borderTopColor: '#E2E8F0',
+                  borderRadius: '50%', animation: 'spin 0.6s linear infinite',
+                }} />}
+                {loading ? 'Verifying...' : 'Verify Code'}
+              </span>
             </button>
+
             <button onClick={cancelReset} style={{
-              background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer',
-              fontFamily: 'VT323, monospace', fontSize: '16px', textDecoration: 'underline',
-              padding: '8px',
-            }}>
-              Back
+              display: 'block',
+              margin: '12px auto 0',
+              background: 'none', border: 'none',
+              color: 'rgba(148, 163, 184, 0.6)', cursor: 'pointer',
+              fontFamily: 'VT323, monospace', fontSize: '16px',
+              padding: '6px 12px',
+              transition: 'color 200ms',
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#86EFAC' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(148, 163, 184, 0.6)' }}
+            >
+              &larr; Back
             </button>
+
+            {error && <p style={{
+              color: '#EF4444', fontSize: '16px', textAlign: 'center',
+              marginTop: '16px', padding: '6px 12px',
+              border: '2px solid rgba(239, 68, 68, 0.4)',
+              background: 'rgba(239, 68, 68, 0.08)',
+            }}>{error}</p>}
+            {success && <p style={{
+              color: '#4ADE80', fontSize: '16px', textAlign: 'center',
+              marginTop: '16px', padding: '6px 12px',
+              border: '2px solid rgba(74, 222, 128, 0.4)',
+              background: 'rgba(74, 222, 128, 0.08)',
+            }}>{success}</p>}
           </div>
-          {error && <p style={{ color: '#EF4444', fontSize: '18px', textAlign: 'center', marginTop: '12px' }}>{error}</p>}
-          {success && <p style={{ color: '#4ADE80', fontSize: '18px', textAlign: 'center', marginTop: '12px' }}>{success}</p>}
-          </>
-        ) : resetStep === 2 ? (
-          <>
-          <p style={{ color: '#86EFAC', fontSize: '18px', textAlign: 'center', marginBottom: '16px' }}>
-            Enter new password
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        ) : /* ====== NEW PASSWORD STEP ====== */
+        resetStep === 2 ? (
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: '16px',
+            animation: 'float-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both',
+          }}>
+            <p style={{
+              color: '#86EFAC', fontSize: '16px', textAlign: 'center',
+              padding: '8px 12px',
+              border: '2px solid rgba(74, 222, 128, 0.3)',
+              background: 'rgba(74, 222, 128, 0.05)',
+            }}>
+              Verified. Set a new password.
+            </p>
+
             <input
               type="password"
-              placeholder="New password (min 6 chars)"
+              placeholder="New password (min 6 characters)"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               minLength={6}
               style={{
-                padding: '12px 16px',
-                background: '#0F172A',
-                border: '2px solid #334155',
-                borderRadius: '8px',
-                color: '#E2E8F0',
-                fontFamily: 'VT323, monospace',
-                fontSize: '20px',
-                outline: 'none',
+                ...inputBase,
+                borderColor: newPassword.length >= 6
+                  ? 'rgba(74, 222, 128, 0.6)'
+                  : 'rgba(45, 106, 79, 0.5)',
               }}
+              onFocus={e => { e.currentTarget.style.borderColor = '#4ADE80'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#2D6A4F'; }}
             />
-            <button onClick={handleResetPassword} disabled={loading || newPassword.length < 6} style={{
-              padding: '14px',
-              background: '#4ADE80',
-              color: '#0F172A',
-              border: 'none',
-              borderRadius: '8px',
-              fontFamily: 'VT323, monospace',
-              fontSize: '22px',
-              cursor: loading || newPassword.length < 6 ? 'not-allowed' : 'pointer',
-              opacity: loading || newPassword.length < 6 ? 0.6 : 1,
-              letterSpacing: '2px',
-            }}>
-              {loading ? '...' : 'Reset Password'}
+
+            <button
+              onClick={handleResetPassword}
+              disabled={loading || newPassword.length < 6}
+              style={{
+                ...btnGreen,
+                opacity: loading || newPassword.length < 6 ? 0.5 : 1,
+                cursor: loading || newPassword.length < 6 ? 'not-allowed' : 'pointer',
+              }}
+              onMouseDown={e => {
+                if (!loading && newPassword.length >= 6) {
+                  (e.currentTarget as HTMLElement).style.transform = 'scale(0.97)'
+                }
+              }}
+              onMouseUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                {loading && <span style={{
+                  display: 'inline-block', width: '14px', height: '14px',
+                  border: '2px solid transparent', borderTopColor: '#E2E8F0',
+                  borderRadius: '50%', animation: 'spin 0.6s linear infinite',
+                }} />}
+                {loading ? 'Resetting...' : 'Reset Password'}
+              </span>
             </button>
+
             <button onClick={cancelReset} style={{
-              background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer',
-              fontFamily: 'VT323, monospace', fontSize: '16px', textDecoration: 'underline',
-              padding: '8px',
-            }}>
-              Back
+              display: 'block',
+              margin: '4px auto 0',
+              background: 'none', border: 'none',
+              color: 'rgba(148, 163, 184, 0.6)', cursor: 'pointer',
+              fontFamily: 'VT323, monospace', fontSize: '16px',
+              padding: '6px 12px',
+              transition: 'color 200ms',
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#86EFAC' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(148, 163, 184, 0.6)' }}
+            >
+              &larr; Back
             </button>
+
+            {error && <p style={{
+              color: '#EF4444', fontSize: '16px', textAlign: 'center',
+              padding: '6px 12px',
+              border: '2px solid rgba(239, 68, 68, 0.4)',
+              background: 'rgba(239, 68, 68, 0.08)',
+            }}>{error}</p>}
+            {success && <p style={{
+              color: '#4ADE80', fontSize: '16px', textAlign: 'center',
+              padding: '6px 12px',
+              border: '2px solid rgba(74, 222, 128, 0.4)',
+              background: 'rgba(74, 222, 128, 0.08)',
+            }}>{success}</p>}
           </div>
-          {error && <p style={{ color: '#EF4444', fontSize: '18px', textAlign: 'center', marginTop: '12px' }}>{error}</p>}
-          {success && <p style={{ color: '#4ADE80', fontSize: '18px', textAlign: 'center', marginTop: '12px' }}>{success}</p>}
-          </>
         ) : (
-          <>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          /* ====== LOGIN / SIGNUP FORM ====== */
+          <form onSubmit={handleSubmit} style={{
+            display: 'flex', flexDirection: 'column', gap: '14px',
+            animation: 'float-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both',
+          }}>
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              style={{
-                padding: '12px 16px',
-                background: '#0F172A',
-                border: '2px solid #334155',
-                borderRadius: '8px',
-                color: '#E2E8F0',
-                fontFamily: 'VT323, monospace',
-                fontSize: '20px',
-                outline: 'none',
-              }}
+              style={inputBase}
+              onFocus={e => { e.currentTarget.style.borderColor = '#4ADE80'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#2D6A4F'; }}
             />
+
             {mode === 'login' && (
               <input
                 type="password"
@@ -327,85 +543,130 @@ export default function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 minLength={6}
-                style={{
-                  padding: '12px 16px',
-                  background: '#0F172A',
-                  border: '2px solid #334155',
-                  borderRadius: '8px',
-                  color: '#E2E8F0',
-                  fontFamily: 'VT323, monospace',
-                  fontSize: '20px',
-                  outline: 'none',
-                }}
+                style={inputBase}
+              onFocus={e => { e.currentTarget.style.borderColor = '#4ADE80'; }}
+              onBlur={e => { e.currentTarget.style.borderColor = '#2D6A4F'; }}
               />
             )}
+
             {mode === 'login' && (
               <button type="button" onClick={handleSendOtp} style={{
-                background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer',
-                fontFamily: 'VT323, monospace', fontSize: '16px', textAlign: 'right',
-                padding: '0', marginTop: '-8px', textDecoration: 'underline',
-              }}>
+                background: 'none', border: 'none',
+                color: 'rgba(148, 163, 184, 0.6)',
+                cursor: 'pointer',
+                fontFamily: 'VT323, monospace',
+                fontSize: '15px',
+                textAlign: 'right',
+                padding: '2px 0',
+                marginTop: '-6px',
+                transition: 'color 200ms',
+              }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#86EFAC' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(148, 163, 184, 0.6)' }}
+              >
                 Forgot password?
               </button>
             )}
-            {error && <p style={{ color: '#EF4444', fontSize: '18px', textAlign: 'center' }}>{error}</p>}
-            {success && <p style={{ color: '#4ADE80', fontSize: '18px', textAlign: 'center' }}>{success}</p>}
-            {mode === 'login' ? (
-              <button type="submit" disabled={loading} style={{
-                padding: '14px',
-                background: '#4ADE80',
-                color: '#0F172A',
-                border: 'none',
-                borderRadius: '8px',
-                fontFamily: 'VT323, monospace',
-                fontSize: '22px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.6 : 1,
-                letterSpacing: '2px',
-              }}>
-                {loading ? '...' : 'Sign In'}
-              </button>
-            ) : (
-              <button type="submit" disabled={loading} style={{
-                padding: '14px',
-                background: '#4ADE80',
-                color: '#0F172A',
-                border: 'none',
-                borderRadius: '8px',
-                fontFamily: 'VT323, monospace',
-                fontSize: '22px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.6 : 1,
-                letterSpacing: '2px',
-              }}>
-                {loading ? '...' : 'Sign Up'}
-              </button>
-            )}
-          </form>
 
-          <p style={{ textAlign: 'center', marginTop: '24px', color: '#94A3B8', fontSize: '18px' }}>
+            {error && <p style={{
+              color: '#EF4444', fontSize: '16px', textAlign: 'center',
+              padding: '8px 12px',
+              border: '2px solid rgba(239, 68, 68, 0.4)',
+              background: 'rgba(239, 68, 68, 0.08)',
+            }}>{error}</p>}
+            {success && <p style={{
+              color: '#FBBF24', fontSize: '16px', textAlign: 'center',
+              padding: '8px 12px',
+              border: '2px solid rgba(251, 191, 36, 0.4)',
+              background: 'rgba(251, 191, 36, 0.08)',
+            }}>{success}</p>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                ...btnGreen,
+                opacity: loading ? 0.5 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer',
+              }}
+              onMouseDown={e => {
+                if (!loading) (e.currentTarget as HTMLElement).style.transform = 'scale(0.97)'
+              }}
+              onMouseUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                {loading && <span style={{
+                  display: 'inline-block', width: '14px', height: '14px',
+                  border: '2px solid transparent', borderTopColor: '#E2E8F0',
+                  borderRadius: '50%', animation: 'spin 0.6s linear infinite',
+                }} />}
+                {loading
+                  ? (mode === 'login' ? 'Signing in...' : 'Creating account...')
+                  : (mode === 'login' ? 'Sign In' : 'Sign Up')
+                }
+              </span>
+            </button>
+          </form>
+        )}
+
+        {/* Toggle login/signup (only when not in reset flow) */}
+        {resetStep === 0 && configured && (
+          <p style={{
+            textAlign: 'center', marginTop: '20px',
+            color: 'rgba(148, 163, 184, 0.6)',
+            fontSize: '16px',
+            animation: 'float-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both',
+          }}>
             {mode === 'login' ? (
               <>No account?{' '}
                 <button onClick={() => { setMode('signup'); setError(''); setSuccess('') }} style={{
-                  background: 'none', border: 'none', color: '#4ADE80', cursor: 'pointer',
-                  fontFamily: 'VT323, monospace', fontSize: '18px', textDecoration: 'underline',
-                }}>
+                  background: 'none', border: 'none',
+                  color: '#86EFAC', cursor: 'pointer',
+                  fontFamily: 'VT323, monospace', fontSize: '16px',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                  transition: 'color 200ms',
+                  padding: '0',
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#4ADE80' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#86EFAC' }}
+                >
                   Sign Up
                 </button>
               </>
             ) : (
               <>Already have an account?{' '}
                 <button onClick={() => { setMode('login'); setError(''); setSuccess('') }} style={{
-                  background: 'none', border: 'none', color: '#4ADE80', cursor: 'pointer',
-                  fontFamily: 'VT323, monospace', fontSize: '18px', textDecoration: 'underline',
-                }}>
+                  background: 'none', border: 'none',
+                  color: '#86EFAC', cursor: 'pointer',
+                  fontFamily: 'VT323, monospace', fontSize: '16px',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                  transition: 'color 200ms',
+                  padding: '0',
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#4ADE80' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#86EFAC' }}
+                >
                   Sign In
                 </button>
               </>
             )}
           </p>
-          </>
         )}
+
+        {/* UPM footer */}
+        <div style={{
+          textAlign: 'center', marginTop: '24px',
+          fontSize: '12px',
+          color: 'rgba(148, 163, 184, 0.25)',
+          fontFamily: "'Press Start 2P', cursive",
+          letterSpacing: '1px',
+          animation: 'float-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both',
+        }}>
+          UPM &middot; KOLEJ PENDETA ZA&apos;BA &middot; FORESTX
+        </div>
       </div>
     </div>
   )

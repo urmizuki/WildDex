@@ -263,9 +263,29 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .jungle-tree, .smoke-particle, .card-wrapper.flipped {
-    animation: none !important;
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+
+  .detail-flip-inner {
     transition: none !important;
+  }
+
+  .detail-flip-card.flipped .detail-flip-inner {
+    transform: rotateY(180deg);
+  }
+
+  .unlock-popup {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .skeleton-pulse {
+    animation: none !important;
+    opacity: 0.3 !important;
   }
 }
 
@@ -1059,4 +1079,61 @@ body {
 @keyframes cardBurst {
   0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+
+/* Pixel-art gold shimmer — discrete color steps for retro feel */
+@keyframes gold-shimmer {
+  0%, 100% { color: #D4AF37; border-color: #D4AF37; }
+  25% { color: #FBBF24; border-color: #FBBF24; }
+  50% { color: #FDE047; border-color: #FDE047; }
+  75% { color: #FBBF24; border-color: #FBBF24; }
+}
+
+@-webkit-keyframes gold-shimmer {
+  0%, 100% { color: #D4AF37; border-color: #D4AF37; }
+  25% { color: #FBBF24; border-color: #FBBF24; }
+  50% { color: #FDE047; border-color: #FDE047; }
+  75% { color: #FBBF24; border-color: #FBBF24; }
+}
+
+@keyframes gold-shimmer-bg {
+  0%, 100% { background: #D4AF37; }
+  25% { background: #FBBF24; }
+  50% { background: #FDE047; }
+  75% { background: #FBBF24; }
+}
+
+@-webkit-keyframes gold-shimmer-bg {
+  0%, 100% { background: #D4AF37; }
+  25% { background: #FBBF24; }
+  50% { background: #FDE047; }
+  75% { background: #FBBF24; }
+}
+
+@keyframes gold-shimmer-text {
+  0%, 100% { color: #D4AF37; }
+  25% { color: #FBBF24; }
+  50% { color: #FDE047; }
+  75% { color: #FBBF24; }
+}
+
+@-webkit-keyframes gold-shimmer-text {
+  0%, 100% { color: #D4AF37; }
+  25% { color: #FBBF24; }
+  50% { color: #FDE047; }
+  75% { color: #FBBF24; }
+}
+
+@keyframes gold-shimmer-border {
+  0%, 100% { border-color: #D4AF37; }
+  25% { border-color: #FBBF24; }
+  50% { border-color: #FDE047; }
+  75% { border-color: #FBBF24; }
+}
+
+@-webkit-keyframes gold-shimmer-border {
+  0%, 100% { border-color: #D4AF37; }
+  25% { border-color: #FBBF24; }
+  50% { border-color: #FDE047; }
+  75% { border-color: #FBBF24; }
 }

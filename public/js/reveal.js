@@ -223,6 +223,19 @@ function saveAndGoHome() {
   const species = state.justRevealed;
   if (species && !state.collection.includes(species.id)) {
     state.collection.push(species.id);
+    // Add discovery certificate to journal
+    const entry = {
+      id: species.id,
+      name: species.name,
+      species: species.species,
+      rarity: species.rarity,
+      conservation: species.conservation,
+      timestamp: Date.now(),
+      specimenId: btoa(species.id + '-' + Date.now()).substring(0, 8).toUpperCase(),
+      confidence: state.lastConfidence || 0,
+      location: 'Malaysia'
+    };
+    state.journal.unshift(entry);
     saveState();
   }
   state.justRevealed = null;

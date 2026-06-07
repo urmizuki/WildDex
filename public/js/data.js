@@ -59,15 +59,35 @@ if (WILDEX_USER) {
   }
 }
 
+// Expedition tiers
+const EXPEDITION_TIERS = [
+  { id: 'seedling', name: 'Seedling', scans: 0, scansMax: 5, color: '#6B7280' },
+  { id: 'sapling', name: 'Sapling', scans: 5, scansMax: 10, color: '#2D6A4F' },
+  { id: 'forester', name: 'Forester', scans: 10, scansMax: 9999, color: '#D4AF37' },
+  { id: 'researcher', name: 'Researcher', scans: 25, scansMax: 9999, color: '#2563EB' },
+  { id: 'ranger', name: 'Ranger', scans: 50, scansMax: 9999, color: '#DC2626' }
+];
+
+function getExpeditionTier(scans) {
+  for (let i = EXPEDITION_TIERS.length - 1; i >= 0; i--) {
+    if (scans >= EXPEDITION_TIERS[i].scans) return EXPEDITION_TIERS[i];
+  }
+  return EXPEDITION_TIERS[0];
+}
+
 let state = {
   scansUsed: 0,
   scansMax: 5,
   collection: [],
+  journal: [],
   currentFilter: 'all',
   justRevealed: null,
   isDark: false,
   isPro: false,
-  introMode: 'jungle'
+  introMode: 'jungle',
+  expeditionScans: 0,
+  expeditionTier: 'seedling',
+  unlockedFeatures: []
 };
 
 // Load saved state from localStorage
@@ -78,9 +98,34 @@ if (savedState) {
     state.isPro = parsed.isPro === true;
     if (typeof parsed.scansUsed === 'number') state.scansUsed = parsed.scansUsed;
     state.collection = Array.isArray(parsed.collection) && parsed.collection.length > 0 ? parsed.collection : state.collection;
+    state.journal = Array.isArray(parsed.journal) ? parsed.journal : state.journal;
     state.isDark = parsed.isDark === true;
     if (parsed.introMode) state.introMode = parsed.introMode;
+    if (typeof parsed.expeditionScans === 'number') state.expeditionScans = parsed.expeditionScans;
+    if (typeof parsed.expeditionTier === 'string') state.expeditionTier = parsed.expeditionTier;
+    if (Array.isArray(parsed.unlockedFeatures)) state.unlockedFeatures = parsed.unlockedFeatures;
+    // Migrate: if user had isPro, give them forester tier
+    if (state.isPro && state.expeditionTier === 'seedling') {
+      console.log('[WildDex] Migrating Pro user to Forester tier');
+      state.expeditionScans = Math.max(state.expeditionScans, 10);
+      state.expeditionTier = 'forester';
+      state.unlockedFeatures = ['expedition-hud', 'tag-seen', 'unlimited-scans'];
+    }
+    // Ensure tier matches scan count
+    const computedTier = getExpeditionTier(state.expeditionScans);
+    if (computedTier.id !== state.expeditionTier) {
+      console.log('[WildDex] Correcting tier from', state.expeditionTier, 'to', computedTier.id);
+      state.expeditionTier = computedTier.id;
+      state.scansMax = computedTier.scansMax;
+      // Auto-unlock features for the tier
+      if (state.expeditionTier === 'forester' || state.expeditionTier === 'researcher' || state.expeditionTier === 'ranger') {
+        state.isPro = true;
+      }
+    }
+    console.log('[WildDex] Loaded state:', 'tier:', state.expeditionTier, 'scans:', state.expeditionScans, 'isPro:', state.isPro);
   } catch (e) {
     console.error('Failed to load saved state', e);
   }
 }
+
+

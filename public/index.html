@@ -3,24 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>WildDex - Malaysian Tree Trading Card Game</title>
   <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/main.css?v=7">
+  <link rel="stylesheet" href="css/theme.css?v=7">
+  <link rel="stylesheet" href="css/components.css?v=7">
+  <link rel="stylesheet" href="css/pages.css?v=7">
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="js/data.js" defer></script>
-  <script src="js/app.js" defer></script>
-  <script src="js/ui.js" defer></script>
-  <script src="js/scan.js" defer></script>
-  <script src="js/collection.js" defer></script>
-  <script src="js/reveal.js" defer></script>
+  <script src="js/data.js?v=7" defer></script>
+  <script src="js/app.js?v=7" defer></script>
+  <script src="js/ui.js?v=7" defer></script>
+  <script src="js/scan.js?v=7" defer></script>
+  <script src="js/collection.js?v=7" defer></script>
+  <script src="js/reveal.js?v=7" defer></script>
 </head>
 <body data-theme="day">
+  <a href="#page-home" class="skip-link">Skip to main content</a>
   <!-- Intro Overlay -->
   <div id="intro-overlay" class="intro-overlay">
     <!-- Mode 1: Jungle Awakens (default) -->
@@ -225,7 +229,7 @@
   <!-- App -->
   <div class="app">
     <!-- HOME -->
-    <main id="page-home" class="page active">
+    <main id="page-home" class="page active" tabindex="-1">
       <div class="page-content">
         <div class="home-hero">
           <div class="logo">WildDex</div>
@@ -243,6 +247,14 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
               Collection
             </button>
+            <button class="pixel-btn pixel-btn-secondary" onclick="goImpact()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2 L15 9 L22 9 L16 14 L18 21 L12 17 L6 21 L8 14 L2 9 L9 9 Z"/></svg>
+              Impact
+            </button>
+            <button class="pixel-btn pixel-btn-secondary" onclick="goJournal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 4 L4 20 L20 20 L20 4 Z"/><path d="M8 4 L8 20"/><path d="M12 9 L16 9"/><path d="M12 13 L16 13"/></svg>
+              Journal
+            </button>
           </div>
         </div>
         <div class="recent-collection">
@@ -256,12 +268,83 @@
     <section id="page-scan" class="page">
       <div class="page-content" style="flex: 1; display: flex; flex-direction: column;">
         <div class="scan-container">
+          <!-- Expedition Tier Badge -->
+          <div class="expedition-scan-badge" id="expedition-scan-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color: inherit;">
+              <polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/>
+            </svg>
+            <span class="expedition-scan-tier" id="expedition-scan-tier">SEEDLING</span>
+            <span class="expedition-scan-divider">|</span>
+            <span class="expedition-scan-mode" id="expedition-scan-mode">5 scans/day</span>
+          </div>
           <div class="viewfinder">
             <video id="camera-video" style="width: 100%; height: 100%; object-fit: cover; display: none;" autoplay playsinline muted></video>
             <div id="camera-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--day-muted);">
               <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </div>
             <div id="model-loading" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--day-primary); font-family: var(--font-heading); font-size: 10px;">Loading AI...</div>
+
+            <!-- Scientific HUD Overlay -->
+            <div class="scan-hud" id="scan-hud" style="display: none;">
+              <!-- Corner brackets -->
+              <div class="scan-hud-corner scan-hud-corner-tl"></div>
+              <div class="scan-hud-corner scan-hud-corner-tr"></div>
+              <div class="scan-hud-corner scan-hud-corner-bl"></div>
+              <div class="scan-hud-corner scan-hud-corner-br"></div>
+
+              <!-- Center crosshair -->
+              <div class="scan-hud-crosshair">
+                <div class="scan-hud-crosshair-h"></div>
+                <div class="scan-hud-crosshair-v"></div>
+                <div class="scan-hud-crosshair-dot"></div>
+              </div>
+
+              <!-- Scan beam sweep -->
+              <div class="scan-hud-beam" id="scan-hud-beam"></div>
+
+              <!-- Bio-scan waveform -->
+              <div class="scan-hud-waveform" id="scan-hud-waveform">
+                <div class="scan-hud-bars">
+                  <div class="scan-hud-bar" style="height: 6px;"></div>
+                  <div class="scan-hud-bar" style="height: 14px;"></div>
+                  <div class="scan-hud-bar" style="height: 22px;"></div>
+                  <div class="scan-hud-bar" style="height: 10px;"></div>
+                  <div class="scan-hud-bar" style="height: 18px;"></div>
+                  <div class="scan-hud-bar" style="height: 26px;"></div>
+                  <div class="scan-hud-bar" style="height: 12px;"></div>
+                  <div class="scan-hud-bar" style="height: 20px;"></div>
+                  <div class="scan-hud-bar" style="height: 8px;"></div>
+                  <div class="scan-hud-bar" style="height: 16px;"></div>
+                  <div class="scan-hud-bar" style="height: 24px;"></div>
+                  <div class="scan-hud-bar" style="height: 10px;"></div>
+                </div>
+                <div class="scan-hud-waveform-label">ANALYZING BIOMETRICS</div>
+              </div>
+
+              <!-- Scanner data readout -->
+              <div class="scan-hud-data" id="scan-hud-data">
+                <div class="scan-hud-data-line" data-status="scanning">BARK TEXTURE: SCANNING_</div>
+                <div class="scan-hud-data-line" data-status="waiting">LEAF MORPHOLOGY: --</div>
+                <div class="scan-hud-data-line" data-status="waiting">DBH ESTIMATE: --</div>
+                <div class="scan-hud-data-line" data-status="waiting">CONFIDENCE: --</div>
+              </div>
+            </div>
+
+            <!-- Species Detected Flash -->
+            <div class="scan-detected-flash" id="scan-detected-flash" onclick="skipScanFlash()">
+              <div class="scan-detected-glow"></div>
+              <div class="scan-detected-content">
+                <svg class="scan-detected-icon" viewBox="0 0 32 32" width="48" height="48">
+                  <rect x="14" y="2" width="4" height="4" fill="#4ADE80"/>
+                  <rect x="10" y="6" width="12" height="4" fill="#22C55E"/>
+                  <rect x="6" y="10" width="20" height="4" fill="#16A34A"/>
+                  <rect x="14" y="14" width="4" height="18" fill="#92400E"/>
+                </svg>
+                <div class="scan-detected-title">SPECIES IDENTIFIED</div>
+                <div class="scan-detected-name" id="scan-detected-name">Unknown</div>
+                <div class="scan-detected-sub">Tap to view species card</div>
+              </div>
+            </div>
           </div>
           <p class="scan-instructions">Point camera at a Malaysian tree</p>
           <button class="pixel-btn" id="scan-btn" style="width: 80px; height: 80px; border-radius: 50%; padding: 0;" onclick="performScan()">
@@ -284,9 +367,34 @@
     <section id="page-collection" class="page">
       <div class="page-content">
         <div class="collection-header">
-          <h2 class="section-title" style="margin-bottom: 0; flex: 1;">Collection</h2>
-          <div class="collection-count">
-            <span id="collection-count">3</span> / 10
+          <div class="collection-header-left">
+            <svg class="collection-header-icon" viewBox="0 0 32 32" style="image-rendering: pixelated;">
+              <rect x="14" y="2" width="4" height="4" fill="#4ADE80"/>
+              <rect x="10" y="6" width="12" height="4" fill="#22C55E"/>
+              <rect x="6" y="10" width="20" height="4" fill="#16A34A"/>
+              <rect x="14" y="14" width="4" height="18" fill="#92400E"/>
+            </svg>
+            <h2 style="font-family: var(--font-heading); font-size: 10px; color: var(--day-text); text-transform: uppercase;">Collection</h2>
+          </div>
+          <div class="collection-count" id="collection-count">
+            <span>0</span> / 10
+          </div>
+        </div>
+        <div class="collection-progress-bar">
+          <div class="collection-progress-fill" id="collection-progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="collection-stats">
+          <div class="collection-stat">
+            <div class="collection-stat-value" id="stat-cards">0</div>
+            <div class="collection-stat-label">Species</div>
+          </div>
+          <div class="collection-stat">
+            <div class="collection-stat-value" id="stat-rarest">—</div>
+            <div class="collection-stat-label">Rarest</div>
+          </div>
+          <div class="collection-stat">
+            <div class="collection-stat-value" id="stat-scans">0</div>
+            <div class="collection-stat-label">Scans</div>
           </div>
         </div>
         <div class="collection-export-bar" id="collection-export-bar">
@@ -351,7 +459,7 @@
           </div>
           <div class="profile-name">Explorer #001</div>
           <div class="profile-email" id="profile-email"></div>
-          <div class="profile-rank">Jungle Ranger</div>
+          <div class="profile-rank" id="profile-rank">Seedling</div>
         </div>
 
         <div class="profile-stats">
@@ -532,6 +640,33 @@
       </div>
     </section>
 
+    <!-- IMPACT DASHBOARD -->
+    <section id="page-impact" class="page">
+      <div class="page-content impact-page">
+        <div class="impact-header">
+          <div class="impact-title">Forest Impact</div>
+          <div class="impact-sub">Your conservation contribution</div>
+        </div>
+        <div class="impact-stats" id="impact-stats"></div>
+        <div class="impact-section">
+          <div class="impact-section-title">Expedition Progress</div>
+          <div class="pixel-bar-chart" id="impact-expedition-progress"></div>
+        </div>
+        <div class="impact-section">
+          <div class="impact-section-title">Biodiversity Progress</div>
+          <div class="pixel-bar-chart" id="impact-biodiversity"></div>
+        </div>
+        <div class="impact-section">
+          <div class="impact-section-title">Carbon Sequestration</div>
+          <div class="pixel-bar-chart" id="impact-carbon"></div>
+        </div>
+        <div class="impact-section">
+          <div class="impact-section-title">Discovery Milestones</div>
+          <div class="milestone-grid" id="impact-milestones"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
       <button class="nav-item active" onclick="goHome()">
@@ -550,11 +685,32 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20 C4 15 8 13 12 13 C16 13 20 15 20 20"/></svg>
         Profile
       </button>
-      <button class="nav-item" id="nav-pro" onclick="goSubscription()">
+      <button class="nav-item" id="nav-expedition" onclick="goSubscription()">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15 9 22 9 16 14 18 21 12 17 6 21 8 14 2 9 9 9"/></svg>
-        <span class="nav-pro-label">Pro</span>
+        <span class="nav-expedition-label">Seedling</span>
       </button>
     </nav>
+
+    <!-- JOURNAL -->
+    <section id="page-journal" class="page">
+      <div class="page-content journal-page">
+        <div class="journal-header">
+          <div class="journal-title">Field Journal</div>
+          <div class="journal-sub">Discovery Log</div>
+        </div>
+        <div class="journal-list" id="journal-list"></div>
+        <div class="journal-empty" id="journal-empty" style="display:none;">
+          <svg width="48" height="48" viewBox="0 0 32 32" style="image-rendering:pixelated; opacity:0.3;">
+            <rect x="14" y="2" width="4" height="4" fill="#4ADE80"/>
+            <rect x="10" y="6" width="12" height="4" fill="#22C55E"/>
+            <rect x="6" y="10" width="20" height="4" fill="#16A34A"/>
+            <rect x="14" y="14" width="4" height="18" fill="#92400E"/>
+          </svg>
+          <div style="font-size:20px; color:var(--day-text);">No discoveries yet</div>
+          <div style="font-size:16px; color:var(--day-primary);">Go scan some trees to populate your journal!</div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- MODALS -->

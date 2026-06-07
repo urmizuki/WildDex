@@ -77,8 +77,34 @@ body[data-theme="night"] .collection-card-name {
   color: var(--night-text);
 }
 
-body[data-theme="night"] .collection-card.missing {
-  opacity: 0.3;
+body[data-theme="night"] .collection-card-species {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .collection-card.undiscovered {
+  opacity: 0.55;
+  border: 2px dashed var(--night-border);
+}
+
+body[data-theme="night"] .collection-card.undiscovered:hover {
+  opacity: 0.75;
+}
+
+body[data-theme="night"] .collection-card-image {
+  background: var(--night-bg);
+}
+
+body[data-theme="night"] .collection-stat {
+  background: var(--night-card);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .collection-stat-label {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .collection-progress-bar {
+  background: var(--night-border);
 }
 
 body[data-theme="night"] .filter-btn {
@@ -93,11 +119,19 @@ body[data-theme="night"] .filter-btn.active {
   color: var(--night-bg);
 }
 
-body[data-theme="night"] .collection-header {
-  border-color: var(--night-border);
+body[data-theme="night"] .collection-count {
+  color: var(--night-muted);
 }
 
-body[data-theme="night"] .collection-count {
+body[data-theme="night"] .collection-header-icon {
+  opacity: 0.7;
+}
+
+body[data-theme="night"] .collection-empty-text {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .collection-empty-sub {
   color: var(--night-muted);
 }
 
@@ -185,6 +219,61 @@ body[data-theme="night"] .scan-instructions {
 
 body[data-theme="night"] .scan-counter-value {
   color: var(--night-accent);
+}
+
+/* Scan HUD dark mode */
+body[data-theme="night"] .scan-hud-corner {
+  border-color: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-hud-crosshair-h,
+body[data-theme="night"] .scan-hud-crosshair-v {
+  background: var(--night-primary);
+  opacity: 0.7;
+}
+
+body[data-theme="night"] .scan-hud-crosshair-dot {
+  background: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-hud-beam {
+  background: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-hud-bar {
+  background: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-hud-waveform-label {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-hud-data {
+  color: var(--night-muted);
+}
+
+body[data-theme="night"] .scan-hud-data-line[data-status="scanning"] {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-hud-data-line::before {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-detected-flash {
+  background: var(--night-bg);
+}
+
+body[data-theme="night"] .scan-detected-title {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .scan-detected-name {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .scan-detected-sub {
+  color: var(--night-muted);
 }
 
 body[data-theme="night"] .new-badge {
@@ -296,6 +385,7 @@ body[data-theme="night"] .plan-btn-current {
 
 body[data-theme="night"] .plan-pro {
   border-color: var(--night-accent);
+  animation: gold-shimmer 2s steps(4) infinite;
 }
 
 body[data-theme="night"] .plan-enterprise {
@@ -357,6 +447,7 @@ body[data-theme="night"] .collection-card-rarity.legendary { color: var(--rarity
 /* Pro features night mode */
 body[data-theme="night"] .nav-pro {
   color: var(--night-accent) !important;
+  animation: gold-shimmer 1.5s steps(4) infinite;
 }
 
 body[data-theme="night"] .export-btn {
@@ -373,6 +464,7 @@ body[data-theme="night"] .export-btn-locked {
 
 body[data-theme="night"] .collection-card.holo {
   animation: holo-shimmer 3s linear infinite;
+  opacity: 1;
 }
 
 body[data-theme="night"] .collection-card.locked {
@@ -406,3 +498,80 @@ body[data-theme="night"] .page-content {
   background: var(--night-card);
   border-color: var(--night-border);
 }
+
+/* Journal dark mode */
+body[data-theme="night"] .journal-header {
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .journal-entry {
+  background: var(--night-card);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .journal-entry-name {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .journal-entry-meta {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .journal-entry-species {
+  color: var(--night-primary);
+}
+
+body[data-theme="night"] .journal-title {
+  color: var(--night-text);
+}
+
+body[data-theme="night"] .journal-sub {
+  color: var(--night-primary);
+}
+
+/* Expedition dark mode */
+body[data-theme="night"] .unlock-popup-inner {
+  background: var(--night-card);
+  border-color: var(--night-accent);
+}
+
+body[data-theme="night"] .unlock-popup-title {
+  color: var(--night-accent);
+}
+
+body[data-theme="night"] .unlock-popup-reward {
+  color: var(--night-text);
+  border-color: var(--night-border);
+  background: var(--night-bg);
+}
+
+body[data-theme="night"] .nav-item.tier-seedling { color: var(--night-muted); }
+body[data-theme="night"] .nav-item.tier-sapling { color: #4ADE80; }
+body[data-theme="night"] .nav-item.tier-forester { color: #FBBF24; }
+body[data-theme="night"] .nav-item.tier-researcher { color: #60A5FA; }
+body[data-theme="night"] .nav-item.tier-ranger { color: #F87171; }
+
+body[data-theme="night"] .expedition-tier-badge {
+  color: inherit;
+}
+
+/* Expedition scan badge night mode */
+body[data-theme="night"] .expedition-scan-badge {
+  background: var(--night-bg);
+  border-color: var(--night-border);
+}
+
+body[data-theme="night"] .expedition-scan-badge.tier-seedling { border-color: #4b5563; }
+body[data-theme="night"] .expedition-scan-badge.tier-seedling .expedition-scan-tier { color: #d1d5db; }
+body[data-theme="night"] .expedition-scan-badge.tier-sapling { border-color: #22c55e; }
+body[data-theme="night"] .expedition-scan-badge.tier-sapling .expedition-scan-tier { color: #4ade80; }
+body[data-theme="night"] .expedition-scan-badge.tier-forester {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.15);
+}
+body[data-theme="night"] .expedition-scan-badge.tier-forester .expedition-scan-tier { color: #fbbf24; }
+body[data-theme="night"] .expedition-scan-badge.tier-forester .expedition-scan-mode { color: #fbbf24; }
+body[data-theme="night"] .expedition-scan-badge.tier-researcher { border-color: #60a5fa; }
+body[data-theme="night"] .expedition-scan-badge.tier-researcher .expedition-scan-tier { color: #93c5fd; }
+body[data-theme="night"] .expedition-scan-badge.tier-ranger { border-color: #f87171; }
+body[data-theme="night"] .expedition-scan-badge.tier-ranger .expedition-scan-tier { color: #fca5a5; }
