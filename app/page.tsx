@@ -140,6 +140,13 @@ export default function HomePage() {
 
 function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: () => void }) {
   const [iframeLoaded, setIframeLoaded] = useState(false)
+  const [searchParams, setSearchParams] = useState('')
+
+  useEffect(() => {
+    setSearchParams(window.location.search)
+  }, [])
+
+  const iframeSrc = `/index.html?v=7${searchParams}#user=${encodeURIComponent(userEmail)}`
 
   return (
     <div style={{ width: '100%', height: '100dvh', position: 'relative', background: '#0a0f0a', overflow: 'hidden' }}>
@@ -213,7 +220,7 @@ function SPAWrapper({ userEmail, onSignOut }: { userEmail: string; onSignOut: ()
       </div>
       {/* Iframe with user email in hash */}
       <iframe
-        src={`/index.html?v=7#user=${encodeURIComponent(userEmail)}`}
+        src={iframeSrc}
         onLoad={() => setIframeLoaded(true)}
         style={{
           position: 'absolute',
