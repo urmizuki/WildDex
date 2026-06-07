@@ -391,3 +391,35 @@ function exportCollectionToPDF() {
   
   doc.save('wilddex-collection.pdf');
 }
+
+function renderSubscription() {
+  const freeBtn = document.getElementById('plan-free-btn');
+  const proBtn = document.querySelector('.plan-pro .plan-btn');
+  const freeCard = document.querySelector('.plan-free');
+  const proCard = document.querySelector('.plan-pro');
+  if (!freeBtn || !proBtn || !freeCard || !proCard) return;
+
+  if (state.isPro) {
+    freeBtn.textContent = 'Free';
+    freeBtn.disabled = false;
+    freeBtn.classList.remove('plan-btn-current');
+    proBtn.textContent = 'Current Plan';
+    proBtn.disabled = true;
+    proBtn.classList.add('plan-btn-current');
+    freeBtn.onclick = downgradeToFree;
+    proBtn.onclick = null;
+    proCard.style.borderColor = '#D4AF37';
+    freeCard.style.borderColor = '';
+  } else {
+    freeBtn.textContent = 'Current Plan';
+    freeBtn.disabled = true;
+    freeBtn.classList.add('plan-btn-current');
+    proBtn.textContent = 'Upgrade Now';
+    proBtn.disabled = false;
+    proBtn.classList.remove('plan-btn-current');
+    freeBtn.onclick = null;
+    proBtn.onclick = upgradeToProDemo;
+    proCard.style.borderColor = '';
+    freeCard.style.borderColor = '';
+  }
+}

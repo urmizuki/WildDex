@@ -27,8 +27,15 @@ function upgradeToProDemo() {
   state.isPro = true;
   saveState();
   updateProUI();
+  renderSubscription();
   closeFreemium();
-  alert('Welcome to WildDex Pro! All features unlocked.');
+}
+
+function downgradeToFree() {
+  state.isPro = false;
+  saveState();
+  updateProUI();
+  renderSubscription();
 }
 
 function updateProUI() {
@@ -129,9 +136,8 @@ function goProfile() {
 }
 
 function goSubscription() {
-  document.getElementById('page-reveal').classList.add('hidden');
-  stopCamera();
   showPage('subscription');
+  if (typeof renderSubscription === 'function') renderSubscription();
 }
 
 function goImpact() {
@@ -398,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateExpeditionUI();
   updateScanExpeditionBadge();
   renderHome();
+  renderSubscription();
   initIntro();
   document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', (e) => {
