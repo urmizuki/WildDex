@@ -193,33 +193,77 @@
 .expedition-scan-badge.tier-ranger { border-color: #dc2626; }
 .expedition-scan-badge.tier-ranger .expedition-scan-tier { color: #f87171; }
 
-/* Gold HUD theme for Forester+ — mobile-safe with !important */
-.viewfinder.expedition-gold {
+/* Tier-specific HUD themes — mobile-safe with !important */
+/* Forester — Gold */
+.viewfinder.expedition-forester {
   border-color: #d4af37 !important;
 }
-
-.viewfinder.expedition-gold .scan-hud-corner {
+.viewfinder.expedition-forester .scan-hud-corner {
   border-color: #fbbf24 !important;
 }
-
-.viewfinder.expedition-gold .scan-hud-crosshair-h,
-.viewfinder.expedition-gold .scan-hud-crosshair-v,
-.viewfinder.expedition-gold .scan-hud-crosshair-dot {
+.viewfinder.expedition-forester .scan-hud-crosshair-h,
+.viewfinder.expedition-forester .scan-hud-crosshair-v,
+.viewfinder.expedition-forester .scan-hud-crosshair-dot {
   background: #fbbf24 !important;
 }
-
-.viewfinder.expedition-gold .scan-hud-beam {
+.viewfinder.expedition-forester .scan-hud-beam {
   border-top-color: #fbbf24 !important;
   border-bottom-color: #fbbf24 !important;
   background: rgba(251, 191, 36, 0.25) !important;
 }
-
-.viewfinder.expedition-gold .scan-hud-bar {
+.viewfinder.expedition-forester .scan-hud-bar {
   background: #fbbf24 !important;
 }
-
-.viewfinder.expedition-gold .scan-hud-waveform-label {
+.viewfinder.expedition-forester .scan-hud-waveform-label {
   color: #fbbf24 !important;
+}
+
+/* Researcher — Blue */
+.viewfinder.expedition-researcher {
+  border-color: #2563eb !important;
+}
+.viewfinder.expedition-researcher .scan-hud-corner {
+  border-color: #60a5fa !important;
+}
+.viewfinder.expedition-researcher .scan-hud-crosshair-h,
+.viewfinder.expedition-researcher .scan-hud-crosshair-v,
+.viewfinder.expedition-researcher .scan-hud-crosshair-dot {
+  background: #60a5fa !important;
+}
+.viewfinder.expedition-researcher .scan-hud-beam {
+  border-top-color: #60a5fa !important;
+  border-bottom-color: #60a5fa !important;
+  background: rgba(96, 165, 250, 0.25) !important;
+}
+.viewfinder.expedition-researcher .scan-hud-bar {
+  background: #60a5fa !important;
+}
+.viewfinder.expedition-researcher .scan-hud-waveform-label {
+  color: #60a5fa !important;
+}
+
+/* Ranger — Red */
+.viewfinder.expedition-ranger {
+  border-color: #dc2626 !important;
+}
+.viewfinder.expedition-ranger .scan-hud-corner {
+  border-color: #ef4444 !important;
+}
+.viewfinder.expedition-ranger .scan-hud-crosshair-h,
+.viewfinder.expedition-ranger .scan-hud-crosshair-v,
+.viewfinder.expedition-ranger .scan-hud-crosshair-dot {
+  background: #ef4444 !important;
+}
+.viewfinder.expedition-ranger .scan-hud-beam {
+  border-top-color: #ef4444 !important;
+  border-bottom-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.25) !important;
+}
+.viewfinder.expedition-ranger .scan-hud-bar {
+  background: #ef4444 !important;
+}
+.viewfinder.expedition-ranger .scan-hud-waveform-label {
+  color: #ef4444 !important;
 }
 
 .viewfinder.expedition-gold .scan-hud-data-line[data-status="scanning"] {

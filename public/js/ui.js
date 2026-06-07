@@ -156,8 +156,31 @@ function renderProfile() {
   document.getElementById('profile-rarest').textContent = rarest ? rarest.name : '-';
   
   const progress = (totalCards / 10) * 100;
-  document.getElementById('profile-progress').style.width = progress + '%';
-  document.getElementById('profile-progress-count').textContent = totalCards;
+  const progressFill = document.getElementById('profile-progress');
+  if (progressFill) {
+    progressFill.style.width = progress + '%';
+    progressFill.style.background = tier.color;
+  }
+  const progressCount = document.getElementById('profile-progress-count');
+  if (progressCount) {
+    progressCount.textContent = totalCards;
+    progressCount.style.color = tier.color;
+  }
+  
+  // Color profile stats by tier
+  const cardsEl = document.getElementById('profile-cards');
+  const scansEl = document.getElementById('profile-scans');
+  const rarestEl = document.getElementById('profile-rarest');
+  if (cardsEl) cardsEl.style.color = tier.color;
+  if (scansEl) scansEl.style.color = tier.color;
+  if (rarestEl) rarestEl.style.color = tier.color;
+  
+  // Color email by tier
+  if (emailEl) emailEl.style.color = tier.color;
+  
+  // Color stats container border by tier
+  const statsContainer = document.querySelector('.profile-stats');
+  if (statsContainer) statsContainer.style.borderColor = tier.color;
   
   // Badges
   const badgeFirst = document.getElementById('badge-first');
@@ -282,21 +305,18 @@ function updateScanExpeditionBadge() {
   badge.classList.remove('tier-seedling', 'tier-sapling', 'tier-forester', 'tier-researcher', 'tier-ranger');
   badge.classList.add('tier-' + tier.id);
   
-  // Gold HUD theme for forester+
+  // Tier-specific HUD theme for forester+
   if (viewfinder) {
-    const isGold = tier.id === 'forester' || tier.id === 'researcher' || tier.id === 'ranger';
-    if (isGold) {
-      viewfinder.classList.add('expedition-gold');
-      console.log('[WildDex] Added expedition-gold to viewfinder');
-    } else {
-      viewfinder.classList.remove('expedition-gold');
-      console.log('[WildDex] Removed expedition-gold from viewfinder');
+    viewfinder.classList.remove('expedition-forester', 'expedition-researcher', 'expedition-ranger');
+    const isHighTier = tier.id === 'forester' || tier.id === 'researcher' || tier.id === 'ranger';
+    if (isHighTier) {
+      viewfinder.classList.add('expedition-' + tier.id);
+      console.log('[WildDex] Added expedition-' + tier.id + ' to viewfinder');
     }
-    // Double-check after 500ms for mobile browsers
     setTimeout(() => {
-      if (viewfinder.classList.contains('expedition-gold') !== isGold) {
-        viewfinder.classList.toggle('expedition-gold', isGold);
-        console.log('[WildDex] Re-synced expedition-gold class, isGold:', isGold);
+      const hasCorrect = viewfinder.classList.contains('expedition-' + tier.id);
+      if (isHighTier && !hasCorrect) {
+        viewfinder.classList.add('expedition-' + tier.id);
       }
     }, 500);
   }
