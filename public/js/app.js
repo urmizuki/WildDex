@@ -404,6 +404,31 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === m) m.classList.remove('active');
     });
   });
+
+  // URL-triggered unlock: append ?unlock=max to URL for demo
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('unlock') === 'max') {
+    state.collection = ['meranti','keruing','rubber','jati','kulai','durian','cengal','tualang','rafflesia','banyan'];
+    state.scansUsed = 999;
+    state.scansMax = 9999;
+    state.isPro = true;
+    state.expeditionScans = 999;
+    state.expeditionTier = 'ranger';
+    state.unlockedFeatures = ['expedition-hud','tag-seen','unlimited-scans','night-vision','global-leaderboard'];
+    state.journal = state.collection.map((id, index) => {
+      const s = SPECIES.find(sp => sp.id === id);
+      if (!s) return null;
+      return {
+        id: s.id, name: s.name, rarity: s.rarity, species: s.species,
+        specimenId: btoa(s.id + '-' + Date.now()).substring(0, 8).toUpperCase(),
+        timestamp: Date.now() - (state.collection.length - index) * 86400000,
+        confidence: 95 + Math.floor(Math.random() * 5),
+        location: 'Taman Negara, Pahang'
+      };
+    }).filter(Boolean);
+    saveState();
+    window.location.href = window.location.pathname + window.location.hash;
+  }
 });
 
 /* ===== Impact Dashboard ===== */
