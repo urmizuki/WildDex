@@ -1,0 +1,128 @@
+WildDex: AI-Powered Species Identification & Gamified Citizen Science
+
+FORESTX Hackathon 2026 - Case Study 4: AI-Driven Species Identification (The Bio-Identifier)
+
+Team: FORESTX
+Affiliation: Academic and Intellectual Development Secretariat, Pendeta Za'ba College Students' Council, Universiti Putra Malaysia
+Submission: TeamName_CS4_Report
+
+
+1. PROBLEM STATEMENT
+
+Accurate tree species identification in high-biodiversity tropical forests requires highly specialized, rare expertise in dendrology and wood anatomy. Malaysia's rainforests are among the most biologically diverse ecosystems on Earth, yet the number of trained field taxonomists and forest botanists capable of identifying species on sight is critically low.
+
+This shortage creates a cascade of consequences:
+
+- Biodiversity auditing is severely slowed. Field surveys that should take weeks stretch into months because expert availability is the bottleneck.
+
+- Forest research is delayed. Ecological studies, carbon stock assessments, and conservation planning all depend on reliable species identification as a first step.
+
+- Enforcement of logging regulations is weakened. Without on-site experts, illegal logging of protected species often goes undetected at the point of harvest.
+
+Traditional identification requires field guides, dichotomous keys, and years of tacit knowledge. For students, early-career researchers, and citizen scientists, the very people who form the future of forestry, the barrier to entry is impossibly high.
+
+There is a need for an accessible, AI-driven tool that can identify tree species from visual traits (bark texture, leaf morphology) in real time, while simultaneously building a crowd-sourced biodiversity database for Malaysia.
+
+
+2. PROPOSED SOLUTION
+
+WildDex is an AI-powered "Point-and-Identify" mobile-first web application that transforms tree species identification into an engaging, gamified experience. Users point their smartphone camera at tree bark or leaves, receive instant species identification, and collect digital trading cards, building a personal forest encyclopedia over time.
+
+Core Features:
+
+AI Species Identification: TensorFlow.js plus Teachable Machine model classifies bark textures and leaf shapes in real-time, directly in the browser.
+
+Digital Trading Cards: Each identified species becomes a collectible card with rarity tiers (Common, Uncommon, Rare, Legendary).
+
+Digital Herbarium: Card-flip detail view showing scientific name, family, order, conservation status, ecological data, and estimated carbon sequestration.
+
+Field Journal: Chronological log of all discoveries with specimen IDs, timestamps, GPS location, and AI confidence scores.
+
+Forest Impact Dashboard: Quantified conservation contributions including species found, rare species protected, estimated CO2 sequestration, and biodiversity metrics.
+
+Expedition Progression System: 5-tier unlock system (Seedling, Sapling, Forester, Researcher, Ranger) that rewards consistent scanning with expanded features.
+
+Discovery Certificate: Auto-generated PDF certificate for every new species discovered, suitable for educational portfolios.
+
+The Gamification Angle:
+
+WildDex reframes field work as collection. Each species identified is a new card added to the user's deck. This approach addresses the human resource shortage by lowering the expertise barrier (anyone with a smartphone can contribute), incentivizing repeated engagement (the collection mechanic encourages more scanning), creating citizen scientists from casual users, and building a crowd-sourced database as a byproduct.
+
+
+3. METHODOLOGY
+
+WildDex was developed using an iterative, phased approach aligned with the case study's technical scope.
+
+Phase 1: Dataset Sourcing and Model Training
+
+A localized dataset of Malaysian timber species was compiled, focusing on bark texture and leaf morphology. A TensorFlow.js image classification model was trained using Google's Teachable Machine platform. The model was trained to recognize 5 initial species: Jati (Tectona grandis), Meranti (Shorea curtisii), Cengal (Neobalanocarpus heimii), Keruing (Dipterocarpus coriaceus), and Kulai (Scaphium macropodum). Additional species (Rubber Tree, Durian Tree, Tualang, Rafflesia, Banyan) are included in the digital library for discovery via user uploads. The model uses a confidence threshold of 0.5; results below this threshold are rejected to prevent false positives.
+
+Phase 2: Application Architecture
+
+The application uses a dual-layer architecture. The outer Next.js 15 layer handles authentication via Supabase Auth (email/password) and serves the app shell. The inner layer is a vanilla JavaScript single-page application running inside an iframe that handles the scanning and collection experience. User data is persisted in browser localStorage with per-user key isolation (wilddex-state-{email}). The styling uses a retro pixel-art design system built entirely with CSS custom properties.
+
+Phase 3: User Experience Design
+
+The user journey follows: Onboarding (three pixel-art intro modes) to Scanning (camera viewfinder with HUD overlay or image upload) to Identification (AI prediction with confidence score) to Collection (card reveal animation) to Exploration (herbarium data, impact dashboard, field journal).
+
+Phase 4: Feedback Loop
+
+The application tracks every scan attempt including failed identifications. This data can identify gaps in the training dataset. The expedition progression system (5 tiers from Seedling to Ranger) incentivizes repeated usage, generating more data for future model improvements.
+
+
+4. TECHNICAL ARCHITECTURE
+
+WildDex uses a two-layer browser architecture.
+
+Layer 1 - Next.js SSR Layer: Handles authentication via Supabase Auth (email/password). Serves the login page (/login), the main app shell (/app), and a password reset API route (/api/reset-password) that uses the Supabase Admin API. The authenticated app shell hosts the SPA inside an iframe, passing user email via URL hash.
+
+Layer 2 - Vanilla SPA (iframe): Contains the scanning and collection experience across 8 pages (Home, Scan, Collection, Reveal, Profile, Subscription, Impact Dashboard, Field Journal). The AI inference engine runs TensorFlow.js 1.3.1 with a Teachable Machine image model loaded from Google's servers, processing camera input (getUserMedia API) or uploaded images entirely in the browser with a 0.5 confidence threshold. The state layer stores all user data in per-key localStorage. The presentation layer uses a CSS-based pixel-art design system: solid borders, zero border radius, steps() animation timing, Press Start 2P for headings, and VT323 for body text.
+
+Data Flow: User captures image via camera or upload. TensorFlow.js predicts species class. If confidence is 0.5 or higher, a card reveal animation displays the result. The species ID is saved to collection in localStorage, a journal entry is created (species, timestamp, specimen ID, confidence, location), expedition tier updates, and all views re-render.
+
+Technology Stack:
+- Framework: Next.js 15 (App Router) with React 19 and TypeScript
+- AI Inference: TensorFlow.js 1.3.1 + TeachableMachine Image 0.8
+- Authentication: Supabase Auth
+- Data Persistence: Browser localStorage
+- PDF Export: jsPDF 2.5.1
+- Deployment: Vercel
+- Fonts: Press Start 2P (headings), VT323 (body)
+
+
+5. EXPECTED OUTCOMES AND IMPACT
+
+Environmental Impact: Every scan contributes to a crowd-sourced biodiversity database of Malaysian tree species. Field teams identify species in seconds instead of waiting for expert verification, accelerating forest surveys. Enforcement officers can identify protected species on the spot, deterring illegal logging.
+
+Social Impact: Gamification recruits thousands of data collectors (hikers, students, tourists) who would never contribute otherwise. Users learn scientific names, conservation statuses, and ecological roles through the herbarium view. The mobile-first design makes participation accessible regardless of formal training.
+
+Economic Impact: Organizations like PERHILITAN and FRIM can deploy less-specialized staff for initial surveys. The free tier (5 scans/day) and Pro tier (RM 9.90/month) keep costs low. Browser-based inference eliminates server costs.
+
+Judging Criteria Alignment:
+- Innovation and Creativity (25%): Trading card mechanic transforms field work into a collection game. Pixel-art aesthetic stands apart from sterile academic tools.
+- Problem-Solution Fit (25%): AI-powered identification directly addresses the expert shortage. Herbarium provides scientific depth. Progression incentivizes continued use.
+- Technical Feasibility (20%): Fully functional prototype on Vercel with browser-based ML. No backend infrastructure. Works on any modern smartphone.
+- Impact and Sustainability (15%): Crowd-sourced database growth, environmental education, partnerships with PERHILITAN/FRIM, subscription model for long-term viability.
+- Presentation and Communication (15%): Polished pixel-art UI with animations, HUD overlays, herbarium views. Demo video and live prototype available.
+
+
+6. REFERENCES
+
+1. DeVries, J. P. R., et al. (2021). Citizen science and machine learning for tree species identification. Methods in Ecology and Evolution, 12(5), 865-876.
+
+2. Hossain, M. A., and Rahman, M. M. (2022). Deep learning-based bark texture classification for tree species identification. Forests, 13(3), 428.
+
+3. TensorFlow.js Documentation. (2024). Browser-based machine learning. Google Inc.
+
+4. Teachable Machine Documentation. (2024). Train models without coding. Google Creative Lab.
+
+5. Carney, L., et al. (2023). The role of gamification in citizen science engagement. Citizen Science: Theory and Practice, 8(1), 1-15.
+
+6. Forest Research Institute Malaysia (FRIM). (2020). Malaysian Tree Species: A Field Guide. Kepong: FRIM Publishing.
+
+7. Supabase Documentation. (2025). Authentication and user management. Supabase Inc.
+
+8. IUCN Red List. (2025). The IUCN Red List of Threatened Species.
+
+
+Report prepared for FORESTX Hackathon 2026 - Case Study 4: AI-Driven Species Identification

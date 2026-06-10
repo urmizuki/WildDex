@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WildDex Pitch - FORESTX Hackathon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --forest-dark: #0d1f10;
+      --forest-mid: #1a3a1f;
+      --forest-green: #2C5F2D;
+      --forest-light: #97BC62;
+      --forest-accent: #D4AF37;
+      --cream: #F5F5F5;
+      --white: #FFFFFF;
+    }
+    
+    body {
+      font-family: 'VT323', monospace;
+      background: var(--forest-dark);
+      color: var(--cream);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+    
+    .pitch-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    
+    .section {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: none;
+      padding: 60px 80px;
+      background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
+    }
+    
+    .section.active {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Typography */
+    .display {
+      font-family: 'Press Start 2P', cursive;
+      color: var(--forest-light);
+    }
+    
+    .accent {
+      color: var(--forest-accent);
+    }
+    
+    /* Navigation */
+    .section-dots {
+      position: fixed;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 100;
+    }
+    
+    .dot {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--forest-light);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .dot.active {
+      background: var(--forest-accent);
+      border-color: var(--forest-accent);
+    }
+    
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: var(--forest-accent);
+      transition: width 0.4s;
+      z-index: 100;
+    }
+    
+    .nav-arrows {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 100;
+    }
+    
+    .nav-btn {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      color: var(--forest-light);
+      background: rgba(0,0,0,0.4);
+      border: 2px solid var(--forest-light);
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover {
+      background: var(--forest-light);
+      color: var(--forest-dark);
+    }
+    
+    /* Section 1: Title */
+    .title-section {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .pixel-logo {
+      width: 100px;
+      height: 120px;
+      margin-bottom: 30px;
+    }
+    
+    .title-section h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+      text-shadow: 3px 3px 0px var(--forest-dark);
+    }
+    
+    .title-section .subtitle {
+      font-size: 26px;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+    
+    .title-section .meta {
+      font-size: 20px;
+      color: var(--forest-light);
+      margin-top: 30px;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: var(--forest-accent);
+      color: var(--forest-dark);
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      padding: 8px 14px;
+      margin-top: 20px;
+      border: 3px solid var(--forest-dark);
+    }
+    
+    /* Section 2: The Hook */
+    .hook-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .hook-content .big-stat {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 80px;
+      color: var(--forest-accent);
+      margin: 20px 0;
+    }
+    
+    .hook-content p {
+      font-size: 28px;
+      line-height: 1.6;
+      max-width: 800px;
+    }
+    
+    /* Section 3: Problem */
+    .problem-cards {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .problem-card {
+      background: rgba(255,255,255,0.04);
+      border: 3px solid var(--forest-green);
+      padding: 24px;
+      transition: all 0.3s;
+    }
+    
+    .problem-card:hover {
+      border-color: var(--forest-accent);
+      background: rgba(255,255,255,0.06);
+    }
+    
+    .problem-card h3 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 13px;
+      color: var(--forest-accent);
+      margin-bottom: 10px;
+    }
+    
+    .problem-card p {
+      font-size: 24px;
+      line-height: 1.5;
+    }
+    
+    /* Section 4: Solution */
+    .solution-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .solution-text {
+      font-size: 26px;
+      line-height: 1.6;
+    }
+    
+    .solution-text .highlight {
+      color: var(--forest-accent);
+      font-family: 'Press Start 2P', cursive;
+      font-size: 18px;
+    }
+    
+    .solution-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .stat-box {
+      background: rgba(255,255,255,0.04);
+      border: 3px solid var(--forest-accent);
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .stat-box .number {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 48px;
+      color: var(--forest-accent);
+    }
+    
+    .stat-box .label {
+      font-size: 22px;
+      color: var(--forest-light);
+      margin-top: 8px;
+    }
+    
+    /* Section 5: Demo */
+    .demo-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .demo-placeholder {
+      width: 320px;
+      height: 640px;
+      background: rgba(255,255,255,0.04);
+      border: 4px solid var(--forest-green);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .demo-placeholder::before {
+      content: 'SCREEN RECORDING';
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      color: var(--forest-accent);
+      position: absolute;
+      top: 20px;
+    }
+    
+    .demo-placeholder .phone-content {
+      width: 280px;
+      height: 500px;
+      background: var(--forest-dark);
+      border: 2px solid var(--forest-green);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .phone-content .hud-frame {
+      width: 100%;
+      height: 200px;
+      border: 2px solid var(--forest-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .hud-frame::before, .hud-frame::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--forest-accent);
+    }
+    
+    .hud-frame::before { top: -3px; left: -3px; border-right: 0; border-bottom: 0; }
+    .hud-frame::after { bottom: -3px; right: -3px; border-left: 0; border-top: 0; }
+    
+    .demo-text {
+      font-size: 24px;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+    
+    /* Section 6: Features */
+    .features-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-content: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .feature-box {
+      background: rgba(255,255,255,0.04);
+      border: 3px solid var(--forest-green);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .feature-box:hover {
+      border-color: var(--forest-accent);
+      transform: translateY(-4px);
+    }
+    
+    .feature-box .icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+    
+    .feature-box h4 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 11px;
+      color: var(--forest-accent);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .feature-box p {
+      font-size: 20px;
+      line-height: 1.4;
+    }
+    
+    /* Section 7: Tech */
+    .tech-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-content: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .tech-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid var(--forest-green);
+      padding: 16px 20px;
+    }
+    
+    .tech-item .label {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 10px;
+      color: var(--forest-accent);
+      min-width: 120px;
+    }
+    
+    .tech-item .value {
+      font-size: 22px;
+    }
+    
+    /* Section 8: Impact */
+    .impact-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .impact-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+    
+    .impact-card {
+      background: rgba(255,255,255,0.04);
+      border: 3px solid var(--forest-green);
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .impact-card .icon {
+      font-size: 44px;
+      margin-bottom: 12px;
+    }
+    
+    .impact-card h4 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      color: var(--forest-accent);
+      margin-bottom: 10px;
+    }
+    
+    .impact-card p {
+      font-size: 20px;
+      line-height: 1.4;
+    }
+    
+    .impact-quote {
+      text-align: center;
+      font-size: 28px;
+      color: var(--forest-light);
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+    
+    /* Section 9: Team */
+    .team-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+    
+    .team-grid {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+    }
+    
+    .team-member {
+      background: rgba(255,255,255,0.04);
+      border: 3px solid var(--forest-green);
+      padding: 30px;
+      text-align: center;
+      width: 200px;
+    }
+    
+    .team-member .avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--forest-green);
+      border: 3px solid var(--forest-accent);
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    
+    .team-member .name {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      color: var(--forest-light);
+      margin-bottom: 8px;
+    }
+    
+    .team-member .role {
+      font-size: 20px;
+      color: var(--forest-accent);
+    }
+    
+    /* Section 10: Ask */
+    .ask-section {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .ask-section h2 {
+      font-size: 36px;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+    
+    .ask-section .ask-text {
+      font-size: 28px;
+      line-height: 1.6;
+      max-width: 700px;
+      margin-bottom: 40px;
+    }
+    
+    .ask-section .cta {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 18px;
+      color: var(--forest-dark);
+      background: var(--forest-accent);
+      padding: 16px 32px;
+      border: 4px solid var(--forest-dark);
+      display: inline-block;
+    }
+    
+    /* Section 11: Thank You */
+    .thank-section {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .thank-section h1 {
+      font-size: 48px;
+      margin-bottom: 30px;
+      text-shadow: 3px 3px 0px var(--forest-dark);
+    }
+    
+    .thank-section p {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: var(--forest-light);
+    }
+    
+    /* Animations */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .section.active {
+      animation: slideIn 0.5s ease-out;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .section {
+        padding: 40px 20px;
+      }
+      
+      .solution-layout,
+      .tech-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .impact-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .team-grid {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .title-section h1 {
+        font-size: 24px;
+      }
+      
+      .display {
+        font-size: 16px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+  
+  <div class="section-dots" id="dots"></div>
+  
+  <div class="pitch-container">
+    
+    <!-- Section 1: Title -->
+    <div class="section title-section active">
+      <svg class="pixel-logo" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="90" width="20" height="30" fill="#8B4513"/>
+        <rect x="25" y="65" width="50" height="35" fill="#2C5F2D"/>
+        <rect x="35" y="40" width="30" height="35" fill="#3A7D3A"/>
+        <rect x="40" y="20" width="20" height="25" fill="#4A9A4A"/>
+        <rect x="38" y="15" width="4" height="4" fill="#97BC62"/>
+        <rect x="60" y="22" width="4" height="4" fill="#97BC62"/>
+        <rect x="28" y="48" width="4" height="4" fill="#97BC62"/>
+      </svg>
+      <h1 class="display">WILDDEX</h1>
+      <p class="subtitle">AI-Powered Species Identification</p>
+      <p class="subtitle">& Gamified Citizen Science</p>
+      <p class="meta">FORESTX Hackathon 2026 | Case Study 4</p>
+      <span class="badge">THE BIO-IDENTIFIER</span>
+    </div>
+    
+    <!-- Section 2: The Hook -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        THE HOOK
+      </div>
+      <div class="hook-content">
+        <p>Malaysia has some of the world's most biodiverse forests.</p>
+        <div class="big-stat">15,000+</div>
+        <p>species of flowering plants and trees</p>
+        <p style="margin-top: 30px; color: var(--forest-accent);">But we don't have enough experts to identify them.</p>
+      </div>
+    </div>
+    
+    <!-- Section 3: The Problem -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        THE PROBLEM
+      </div>
+      <div class="problem-cards">
+        <div class="problem-card">
+          <h3>EXPERT SHORTAGE</h3>
+          <p>There are only a handful of dendrology specialists in Malaysia. Field surveys that should take weeks stretch into months waiting for expert identification.</p>
+        </div>
+        <div class="problem-card">
+          <h3>SLOWED RESEARCH</h3>
+          <p>Biodiversity auditing, carbon stock assessments, and conservation planning all depend on reliable species identification — the bottleneck is human expertise.</p>
+        </div>
+        <div class="problem-card">
+          <h3>WEAK ENFORCEMENT</h3>
+          <p>Without on-site experts, illegal logging of protected species often goes undetected. PERHILITAN and FRIM need tools their field staff can use.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section 4: The Solution -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        THE SOLUTION
+      </div>
+      <div class="solution-layout">
+        <div class="solution-text">
+          <p><span class="highlight">WILDDEX</span> is an AI-powered "Point-and-Identify" mobile app that turns tree species identification into a <span class="accent">gamified collection experience</span>.</p>
+          <p style="margin-top: 20px;">Point your phone at a tree. Get instant species ID. Collect trading cards. Build Malaysia's largest crowd-sourced forest database.</p>
+        </div>
+        <div class="solution-stats">
+          <div class="stat-box">
+            <div class="number">0.5s</div>
+            <div class="label">AI Inference</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">10</div>
+            <div class="label">Species Trained</div>
+          </div>
+          <div class="stat-box">
+            <div class="number">5</div>
+            <div class="label">Expedition Tiers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section 5: Live Demo -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        LIVE DEMO
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <video id="demo-video" controls style="max-width: 100%; max-height: 70vh; border: 4px solid var(--forest-green);" poster="">
+          <source src="demo.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <p style="font-size: 20px; color: var(--forest-light); margin-top: 16px; text-align: center;">
+          WildDex in action — scan, identify, collect
+        </p>
+      </div>
+    </div>
+    
+    <!-- Section 6: Key Features -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        KEY FEATURES
+      </div>
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="icon">📷</div>
+          <h4>AI SCAN</h4>
+          <p>Real-time species ID from bark or leaf using TensorFlow.js</p>
+        </div>
+        <div class="feature-box">
+          <div class="icon">🃏</div>
+          <h4>TRADING CARDS</h4>
+          <p>Collectible cards with rarity tiers: Common to Legendary</p>
+        </div>
+        <div class="feature-box">
+          <div class="icon">📖</div>
+          <h4>HERBARIUM</h4>
+          <p>Card-flip scientific detail: name, family, conservation, carbon</p>
+        </div>
+        <div class="feature-box">
+          <div class="icon">📓</div>
+          <h4>FIELD JOURNAL</h4>
+          <p>Discovery log with specimen IDs, timestamps, GPS</p>
+        </div>
+        <div class="feature-box">
+          <div class="icon">📊</div>
+          <h4>IMPACT DASH</h4>
+          <p>Quantified conservation: CO2, biodiversity, milestones</p>
+        </div>
+        <div class="feature-box">
+          <div class="icon">🏆</div>
+          <h4>EXPEDITION</h4>
+          <p>5-tier progression: Seedling → Sapling → Forester → Researcher → Ranger</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section 7: Technical Architecture -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        TECHNICAL ARCHITECTURE
+      </div>
+      <div class="tech-layout">
+        <div class="tech-item">
+          <div class="label">FRONTEND</div>
+          <div class="value">Next.js 15 + React 19 + TypeScript</div>
+        </div>
+        <div class="tech-item">
+          <div class="label">AI ENGINE</div>
+          <div class="value">TensorFlow.js 1.3.1 + Teachable Machine</div>
+        </div>
+        <div class="tech-item">
+          <div class="label">AUTH</div>
+          <div class="value">Supabase Auth (email/password)</div>
+        </div>
+        <div class="tech-item">
+          <div class="label">STATE</div>
+          <div class="value">Browser localStorage (per-user)</div>
+        </div>
+        <div class="tech-item">
+          <div class="label">DESIGN</div>
+          <div class="value">CSS Pixel Art (Press Start 2P + VT323)</div>
+        </div>
+        <div class="tech-item">
+          <div class="label">DEPLOY</div>
+          <div class="value">Vercel</div>
+        </div>
+        <div class="tech-item">
+          <div class="label">ARCHITECTURE</div>
+          <div class="value">Next.js SSR + Vanilla JS SPA (iframe)</div>
+        </div>
+        <div class="tech-item">
+          <div class="label">EXPORT</div>
+          <div class="value">jsPDF 2.5.1 (Discovery Certificates)</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section 8: Impact -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        EXPECTED IMPACT
+      </div>
+      <div class="impact-layout">
+        <div class="impact-row">
+          <div class="impact-card">
+            <div class="icon">🌲</div>
+            <h4>ENVIRONMENTAL</h4>
+            <p>Crowd-sourced biodiversity database. Faster auditing. Illegal logging deterrence.</p>
+          </div>
+          <div class="impact-card">
+            <div class="icon">👥</div>
+            <h4>SOCIAL</h4>
+            <p>Citizen science at scale. Education. Accessible to anyone with a smartphone.</p>
+          </div>
+          <div class="impact-card">
+            <div class="icon">💰</div>
+            <h4>ECONOMIC</h4>
+            <p>Reduced expert dependency. Free tier available. Zero server inference cost.</p>
+          </div>
+        </div>
+        <div class="impact-quote">
+          "Every scan turns a casual hiker into an active citizen scientist,<br>
+          building the largest crowd-sourced forest database in Malaysia."
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section 9: Team -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        OUR TEAM
+      </div>
+      <div class="team-layout">
+        <p style="font-size: 24px; color: var(--forest-light); margin-bottom: 20px;">
+          Team FORESTX — Kolej Pendeta Za'ba, UPM
+        </p>
+        <div class="team-grid">
+          <div class="team-member">
+            <div class="avatar">🧑‍💻</div>
+            <div class="name">MEMBER 1</div>
+            <div class="role">Lead Dev</div>
+          </div>
+          <div class="team-member">
+            <div class="avatar">👩‍💻</div>
+            <div class="name">MEMBER 2</div>
+            <div class="role">ML Engineer</div>
+          </div>
+          <div class="team-member">
+            <div class="avatar">🧑‍🎨</div>
+            <div class="name">MEMBER 3</div>
+            <div class="role">UI/UX</div>
+          </div>
+          <div class="team-member">
+            <div class="avatar">👩‍🏫</div>
+            <div class="name">MEMBER 4</div>
+            <div class="role">Research</div>
+          </div>
+        </div>
+        <p style="font-size: 20px; color: var(--forest-light); margin-top: 20px;">
+          Academic and Intellectual Development Secretariat<br>
+          Pendeta Za'ba College Students' Council
+        </p>
+      </div>
+    </div>
+    
+    <!-- Section 10: The Ask -->
+    <div class="section ask-section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        OUR ASK
+      </div>
+      <h2 class="display">We need your support to scale WildDex.</h2>
+      <p class="ask-text">
+        We are seeking partnerships with <span class="accent">PERHILITAN</span> and <span class="accent">FRIM</span> to deploy WildDex in Malaysian forest reserves. With your support, we can expand our species dataset, train more accurate models, and deploy this tool to the field staff who need it most.
+      </p>
+      <div class="cta">LET'S BUILD THIS TOGETHER</div>
+    </div>
+    
+    <!-- Section 11: Subscription Model -->
+    <div class="section">
+      <div class="display" style="font-size: 24px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 4px solid var(--forest-accent); display: inline-block;">
+        SUBSCRIPTION MODEL
+      </div>
+      <div class="slide-content">
+        <div class="impact-row">
+          <div class="impact-card">
+            <div class="icon">🌱</div>
+            <h4>FREE</h4>
+            <p style="font-size: 28px; margin-bottom: 10px;">RM 0</p>
+            <p style="font-size: 18px;">5 scans/day</p>
+            <p style="font-size: 18px;">Common cards only</p>
+            <p style="font-size: 18px;">Basic collection</p>
+          </div>
+          <div class="impact-card" style="border-color: var(--forest-accent); position: relative;">
+            <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--forest-accent); color: var(--forest-dark); font-family: 'Press Start 2P'; font-size: 9px; padding: 4px 8px;">MOST POPULAR</div>
+            <div class="icon">⭐</div>
+            <h4>PRO</h4>
+            <p style="font-size: 28px; margin-bottom: 10px; color: var(--forest-accent);">RM 9.90/mo</p>
+            <p style="font-size: 18px;">Unlimited scans</p>
+            <p style="font-size: 18px;">All rarities</p>
+            <p style="font-size: 18px;">PDF export</p>
+          </div>
+          <div class="impact-card">
+            <div class="icon">🏢</div>
+            <h4>ENTERPRISE</h4>
+            <p style="font-size: 28px; margin-bottom: 10px;">Custom</p>
+            <p style="font-size: 18px;">Custom species</p>
+            <p style="font-size: 18px;">CSV/API access</p>
+            <p style="font-size: 18px;">Dedicated support</p>
+          </div>
+        </div>
+        <div class="impact-quote" style="margin-top: 40px;">
+          <span style="color: var(--forest-accent);">Free for students. Affordable for researchers.</span><br>
+          Sustainable funding for long-term development.
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section 12: Thank You -->
+    <div class="section thank-section">
+      <svg class="pixel-logo" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="90" width="20" height="30" fill="#8B4513"/>
+        <rect x="25" y="65" width="50" height="35" fill="#2C5F2D"/>
+        <rect x="35" y="40" width="30" height="35" fill="#3A7D3A"/>
+        <rect x="40" y="20" width="20" height="25" fill="#4A9A4A"/>
+        <rect x="38" y="15" width="4" height="4" fill="#97BC62"/>
+        <rect x="60" y="22" width="4" height="4" fill="#97BC62"/>
+        <rect x="28" y="48" width="4" height="4" fill="#97BC62"/>
+      </svg>
+      <h1 class="display">TERIMA KASIH</h1>
+      <p>Team FORESTX</p>
+      <p>Universiti Putra Malaysia</p>
+      <p>Kolej Pendeta Za'ba</p>
+      <p style="margin-top: 20px; color: var(--forest-accent);">Case Study 4: AI-Driven Species Identification</p>
+      <span class="badge" style="margin-top: 20px;">WILDDEX</span>
+    </div>
+    
+  </div>
+  
+  <div class="nav-arrows">
+    <button class="nav-btn" onclick="prevSection()">◀ PREV</button>
+    <button class="nav-btn" onclick="nextSection()">NEXT ▶</button>
+  </div>
+
+  <script>
+    let currentSection = 0;
+    const sections = document.querySelectorAll('.section');
+    const totalSections = sections.length;
+    const progressBar = document.getElementById('progressBar');
+    const dotsContainer = document.getElementById('dots');
+    
+    // Create dots
+    sections.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => showSection(i);
+      dotsContainer.appendChild(dot);
+    });
+    
+    const dots = document.querySelectorAll('.dot');
+    
+    function showSection(index) {
+      sections.forEach((section, i) => {
+        section.classList.remove('active');
+        dots[i].classList.remove('active');
+        if (i === index) {
+          section.classList.add('active');
+          dots[i].classList.add('active');
+        }
+      });
+      currentSection = index;
+      const progress = ((index + 1) / totalSections) * 100;
+      progressBar.style.width = progress + '%';
+    }
+    
+    function nextSection() {
+      if (currentSection < totalSections - 1) {
+        showSection(currentSection + 1);
+      }
+    }
+    
+    function prevSection() {
+      if (currentSection > 0) {
+        showSection(currentSection - 1);
+      }
+    }
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        nextSection();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        prevSection();
+      }
+    });
+    
+    // Touch support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      if (touchEndX < touchStartX - swipeThreshold) {
+        nextSection();
+      } else if (touchEndX > touchStartX + swipeThreshold) {
+        prevSection();
+      }
+    }
+    
+    showSection(0);
+  </script>
+</body>
+</html>

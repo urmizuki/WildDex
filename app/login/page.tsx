@@ -535,19 +535,17 @@ export default function LoginPage() {
               onBlur={e => { e.currentTarget.style.borderColor = '#2D6A4F'; }}
             />
 
-            {mode === 'login' && (
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                minLength={6}
-                style={inputBase}
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              minLength={6}
+              style={inputBase}
               onFocus={e => { e.currentTarget.style.borderColor = '#4ADE80'; }}
               onBlur={e => { e.currentTarget.style.borderColor = '#2D6A4F'; }}
-              />
-            )}
+            />
 
             {mode === 'login' && (
               <button type="button" onClick={handleSendOtp} style={{
