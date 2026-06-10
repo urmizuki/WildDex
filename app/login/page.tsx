@@ -72,7 +72,7 @@ export default function LoginPage() {
     }
 
     if (mode === 'signup') {
-      setSuccess('Signed up! Check your email to confirm.')
+      setSuccess('Account created! Go to login.')
       setLoading(false)
       return
     }
